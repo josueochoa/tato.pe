@@ -1,0 +1,72 @@
+[
+ {
+  "file": "public/found/quebrada-de-llaca-de-huaraz.jpg",
+  "media": "image",
+  "ref": "openverse:def457e1-d14d-4ef6-8f6c-ca811f615a8f",
+  "title": "Quebrada de Llaca de Huaraz",
+  "creator": "Nayda Mena",
+  "creatorUrl": "https://commons.wikimedia.org/wiki/User:Nayda_Mena",
+  "date": null,
+  "license": "CC0",
+  "licenseCode": "cc0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en/",
+  "creditRequired": false,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=190288907",
+  "via": "Wikimedia Commons",
+  "image": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Quebrada_de_Llaca_de_Huaraz.jpg",
+  "width": 1536,
+  "height": 2048,
+  "bytes": 1505749,
+  "credit": "\"Quebrada de Llaca de Huaraz\" by Nayda Mena, CC0, via Wikimedia Commons",
+  "notes": [],
+  "saved": "2026-10-14T23:17:29.047Z"
+ },
+ {
+  "file": "public/found/atardecer-en-huacachina-2.jpg",
+  "media": "image",
+  "ref": "openverse:6d5d9ffd-24b0-4936-aaa8-3ad0a33380c6",
+  "title": "Atardecer en Huacachina 2",
+  "creator": "Kevo287",
+  "creatorUrl": "https://commons.wikimedia.org/wiki/User:Kevo287",
+  "date": null,
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=73284273",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Atardecer_en_Huacachina_2.jpg/1920px-Atardecer_en_Huacachina_2.jpg",
+  "width": 1920,
+  "height": 3140,
+  "bytes": 1383102,
+  "credit": "\"Atardecer en Huacachina 2\" by Kevo287, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-14T23:17:31.169Z"
+ },
+ {
+  "file": "public/found/jr-ucayali-centro-de-lima-17.jpg",
+  "media": "image",
+  "ref": "openverse:9ef6f9d5-0b69-4068-bbc7-4cc62f601aaa",
+  "title": "Jr Ucayali, centro de Lima 17",
+  "creator": "Ibrehaut",
+  "creatorUrl": "https://commons.wikimedia.org/wiki/User:Ibrehaut",
+  "date": null,
+  "license": "CC BY-SA 4.0",
+  "licenseCode": "by-sa",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "creditRequired": true,
+  "page": "https://commons.wikimedia.org/w/index.php?curid=62470721",
+  "via": "Wikimedia Commons",
+  "image": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/45/Jr_Ucayali%2C_centro_de_Lima_17.jpg/1920px-Jr_Ucayali%2C_centro_de_Lima_17.jpg",
+  "width": 1920,
+  "height": 2560,
+  "bytes": 1098445,
+  "credit": "\"Jr Ucayali, centro de Lima 17\" by Ibrehaut, CC BY-SA 4.0, via Wikimedia Commons",
+  "notes": [
+   "Share-alike: an altered version (recoloured, combined with other pictures) must be shared under the same licence."
+  ],
+  "saved": "2026-10-14T23:17:32.507Z"
+ }
+]

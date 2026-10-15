@@ -1,0 +1,58 @@
+---
+import { nav, site } from '../lib/site';
+---
+<footer class="foot" id="contacto" data-ink="#ffffff">
+  <div class="foot__photo">
+    <img src="/poster/transformacion.jpg" alt="Tato convertido en un héroe con armadura blanca, de cerca" loading="lazy" decoding="async" width="720" height="1280" />
+  </div>
+  <div class="foot__menu">
+    <a class="foot__mark small medium" href="/">Tato Studio</a>
+    <nav class="foot__nav" aria-label="Pie de página">
+      {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+    </nav>
+    <div class="foot__blocks small">
+      <div>
+        <p class="medium">Contacto</p>
+        <p><a class="link-plain" href={`https://wa.me/${site.whatsappNumber}`}>WhatsApp +51 961 662 512</a></p>
+        <p><a class="link-plain" href={`mailto:${site.email}`}>{site.email}</a></p>
+        <p>Huaraz · Ica · Lima</p>
+      </div>
+      <div>
+        <p class="medium">Redes</p>
+        <p><a class="link-plain" href={site.tiktok}>TikTok</a></p>
+        <p><a class="link-plain" href={site.instagram}>Instagram</a></p>
+        <p><a class="link-plain" href={site.facebook}>Facebook</a> · <a class="link-plain" href={site.youtube}>YouTube</a></p>
+      </div>
+    </div>
+    <p class="foot__credits small">Fotos: <a class="link-plain" href="https://commons.wikimedia.org/w/index.php?curid=190288907">“Quebrada de Llaca de Huaraz”</a> por Nayda Mena, <a class="link-plain" href="https://creativecommons.org/publicdomain/zero/1.0/deed.es">CC0</a>; <a class="link-plain" href="https://commons.wikimedia.org/w/index.php?curid=73284273">“Atardecer en Huacachina 2”</a> por Kevo287, <a class="link-plain" href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>; <a class="link-plain" href="https://commons.wikimedia.org/w/index.php?curid=62470721">“Jr Ucayali, centro de Lima 17”</a> por Ibrehaut, <a class="link-plain" href="https://creativecommons.org/licenses/by-sa/4.0/deed.es">CC BY-SA 4.0</a>; vía Wikimedia Commons.</p>
+    <p class="foot__legal small">© 2026 Tato Studio · <a class="link-plain" href="/terminos">Términos: permiso de imagen y reembolsos</a> · Algunos links son de afiliado.</p>
+  </div>
+</footer>
+
+<style>
+  .foot { display: grid; grid-template-columns: 1fr 1fr; min-height: 100svh; background: var(--ink); color: var(--bg); }
+  .foot__photo { overflow: hidden; background: var(--ink); position: relative; min-height: 100svh; }
+  .foot__photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; transform: scale(1.6); transform-origin: 50% 18%; }
+  .foot__menu { display: flex; flex-direction: column; padding: 80px var(--margin) 24px calc(var(--gutter) * 2 + 2vw); }
+  .foot__mark { position: absolute; margin-top: -52px; text-decoration: none; }
+  .foot__nav { display: flex; flex-direction: column; gap: 28px; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.03em; font-size: clamp(1.5rem, 2.6vw, 2.5rem); line-height: 1; }
+  .foot__nav a { text-decoration: none; transition: transform var(--t-hover) var(--ease-out), opacity var(--t-hover) ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .foot__nav:hover a:not(:hover) { opacity: 0.45; }
+    .foot__nav a:hover { transform: translateX(12px); }
+  }
+  .foot__blocks { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 64px; max-width: 36rem; }
+  .foot__blocks p + p { margin-top: 0.35rem; }
+  .foot__credits { margin-top: auto; padding-top: 3rem; max-width: 100%; }
+  .foot__legal { margin-top: 1rem; max-width: 100%; }
+  @media (max-width: 47.99em) {
+    .foot { display: block; }
+    .foot__photo { height: 50svh; min-height: 0; }
+    .foot__photo img { transform: scale(1.3); }
+    .foot__menu { padding: 2rem 16px 1.5rem; }
+    .foot__mark { position: static; margin: 0 0 1.5rem; }
+    .foot__nav { font-size: 8vw; gap: 20px; }
+    .foot__blocks { grid-template-columns: 1fr; margin-top: 2.5rem; }
+    .foot__credits { padding-top: 2.5rem; }
+  }
+</style>

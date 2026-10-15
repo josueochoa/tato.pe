@@ -1,0 +1,111 @@
+---
+import Base from '../../layouts/Base.astro';
+import { site, wa } from '../../lib/site';
+
+// One phone-wide column, the way the Linktree bio link works. Point the Linktree, TikTok and
+// Instagram bios here. Every button names what it does and shows its price or fact on the right.
+const links = [
+  { label: 'Quiero aprender', fact: '25 oct · S/49', href: '/aprende/taller-zombie-love-story/', tone: 'blue' },
+  { label: 'Pack de prompts', fact: 'S/29', href: '/aprende/pack-prompts-zombie-love/', tone: 'yellow' },
+  { label: 'Prompt de la semana', fact: 'Gratis', href: wa('Hola Tato, quiero el prompt de la semana'), tone: 'green', external: true },
+  { label: 'Quiero mi video', fact: 'Desde S/39', href: '/#tu-video', tone: 'red' },
+  { label: 'Probar Higgsfield', fact: 'Link de afiliado', href: site.higgsfield, tone: 'paper', external: true, sponsored: true },
+  { label: 'Para marcas', fact: 'Con Agentia', href: '/#marcas', tone: 'paper' },
+  { label: 'Mis videos', fact: 'En TikTok', href: '/#videos', tone: 'paper' },
+];
+const socials = [
+  { label: 'TikTok', href: site.tiktok },
+  { label: 'Instagram', href: site.instagram },
+  { label: 'Facebook', href: site.facebook },
+  { label: 'YouTube', href: site.youtube },
+  { label: 'WhatsApp', href: wa('Hola Tato') },
+];
+---
+<Base title="Tato Studio · Links" description={`${site.tagline}. Taller, pack de prompts, video personalizado y el prompt de la semana gratis.`} theme="#1f1f1f" menu={false}>
+  <main class="links">
+    <div class="links__col">
+      <a class="links__avatar" href="/" aria-label="Ir a la web de Tato Studio" data-reveal="scale" style="--i:0">
+        <video data-loop muted loop playsinline preload="metadata" poster="/poster/transformacion.jpg" width="720" height="1280" aria-hidden="true">
+          <source src="/video/transformacion.mp4" type="video/mp4" />
+        </video>
+      </a>
+      <h1 class="links__name" data-reveal style="--i:1"><span>Tato</span><span class="links__studio">Studio</span></h1>
+      <p class="links__bio" data-reveal style="--i:2">{site.tagline}. Te enseño a crear los videos con IA que ves en mi TikTok, o te hago el tuyo.</p>
+
+      <nav class="links__list" aria-label="Enlaces">
+        {links.map((l, i) => (
+          <a class={`links__item links__item--${l.tone}`} href={l.href} target={l.external ? '_blank' : undefined}
+             rel={l.external ? (l.sponsored ? 'sponsored noopener' : 'noopener') : undefined} data-reveal style={`--i:${i + 3}`}>
+            <span class="links__label">{l.label}</span>
+            <span class="links__fact small">{l.fact}</span>
+          </a>
+        ))}
+      </nav>
+
+      <ul class="links__social small" data-reveal style={`--i:${links.length + 3}`}>
+        {socials.map((s) => <li><a class="link" href={s.href} target="_blank" rel="noopener">{s.label}</a></li>)}
+      </ul>
+      <p class="links__foot small" data-reveal style={`--i:${links.length + 4}`}>
+        <a class="link" href="/">Ver la web completa</a> · <a class="link" href="/terminos/">Términos</a> · {site.cities.join(', ')}
+      </p>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .links {
+    --bg: var(--color-ink);
+    --ink: var(--color-paper);
+    --surface: #2a2a2a;
+    min-height: 100svh;
+    background: var(--bg);
+    color: var(--ink);
+    display: grid;
+    place-items: start center;
+    padding: clamp(2rem, 6vh, 4.5rem) 16px clamp(3rem, 8vh, 6rem);
+  }
+  .links__col { width: 100%; max-width: 30rem; display: grid; justify-items: center; gap: 1rem; }
+
+  .links__avatar {
+    display: block; width: clamp(7rem, 24vw, 9rem); aspect-ratio: 1; border-radius: 50%; overflow: hidden;
+    background: var(--surface); outline-offset: 4px; transition: transform var(--t-hover) var(--ease-out);
+  }
+  .links__avatar video { width: 100%; height: 100%; object-fit: cover; object-position: 50% 28%; display: block; }
+  .links__avatar:hover { transform: scale(1.03); }
+  .links__avatar:active { transform: scale(0.97); }
+
+  .links__name {
+    display: flex; gap: 0.4em; align-items: baseline; justify-content: center;
+    font-size: clamp(2rem, 9vw, 2.75rem); line-height: 1; margin-top: 0.25rem;
+  }
+  .links__studio { color: var(--color-red); }
+  .links__bio { max-width: 30ch; text-align: center; font-size: var(--step-body); line-height: 1.4; margin-bottom: 0.75rem; }
+
+  .links__list { width: 100%; display: grid; gap: 0.6rem; }
+  .links__item {
+    display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1rem;
+    min-height: 4rem; padding: 1rem 1rem 1rem 1.25rem; align-items: center; text-decoration: none;
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(1.0625rem, 4.6vw, 1.25rem); line-height: 1.1;
+    transition: transform var(--t-press) var(--ease-out), filter var(--t-hover) ease;
+  }
+  .links__item:hover { filter: brightness(0.94); }
+  .links__item:active { transform: scale(0.98); }
+  .links__item:focus-visible { outline: 2px solid var(--color-paper); outline-offset: 3px; }
+  .links__label { flex: 1 1 auto; }
+  .links__fact { margin-left: auto; font-family: var(--font-text); font-weight: 500; white-space: nowrap; padding: 0.3em 0.6em; background: var(--color-paper); color: var(--color-ink); }
+  .links__item--paper .links__fact { background: var(--color-canvas); }
+  .links__item--blue { background: var(--color-blue); color: var(--color-paper); }
+  .links__item--yellow { background: var(--color-yellow); color: var(--color-ink); }
+  .links__item--green { background: var(--color-green); color: var(--color-paper); }
+  .links__item--red { background: var(--color-red); color: var(--color-paper); }
+  .links__item--paper { background: var(--color-paper); color: var(--color-ink); }
+
+  .links__social { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem 1.25rem; list-style: none; padding: 0; margin: 1.25rem 0 0; font-weight: 500; }
+  .links__foot { text-align: center; color: #b4b4b4; }
+  .links__foot .link { color: var(--ink); }
+
+  @media (max-width: 47.99em) {
+    .links__item { font-size: 1.1875rem; }
+    .links__fact { font-size: 0.875rem; }
+  }
+</style>

@@ -1,0 +1,121 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../lib/site';
+const products = await getCollection('products');
+const catalogue = Object.fromEntries(products.map((p) => [p.id, { title: p.data.title, price: p.data.price, cover: p.data.cover, cta: p.data.cta }]));
+---
+<Base title="Tu carrito · Tato Studio" description="Revisa tu pedido y confírmalo por WhatsApp. Pagas por Yape, Plin o tarjeta.">
+  <main class="cart wrap" data-cart-page>
+    <header class="cart__top">
+      <a class="small medium cart__mark" href="/">Tato Studio</a>
+      <nav class="small medium cart__nav" aria-label="Principal"><a class="link" href="/aprende">Aprende</a><a class="link" href="/blog">Blog</a></nav>
+    </header>
+    <h1 class="cart__title">Tu carrito</h1>
+    <div class="cart__empty" data-cart-empty>
+      <p class="lead">Todavía no hay nada aquí.</p>
+      <p><a class="link-plain medium" href="/aprende">Ver el taller y el pack</a></p>
+    </div>
+    <div class="cart__lines" data-cart-lines hidden></div>
+    <div class="cart__sum" data-cart-sum hidden>
+      <p class="cart__total nums">Total <span data-cart-total>S/0</span></p>
+      <p class="small">Pagas por Yape, Plin o tarjeta. Al confirmar por WhatsApp te paso los datos y, apenas llegue el pago, te entrego por el mismo chat.</p>
+      <div class="cart__actions">
+        <a class="button" href="#" data-cart-checkout>Pagar por WhatsApp</a>
+        <button class="link-plain medium" type="button" data-cart-clear>Vaciar</button>
+      </div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+
+<template data-cart-line-tpl>
+  <article class="line">
+    <img width="720" height="1280" alt="" loading="lazy" decoding="async" />
+    <div class="line__body">
+      <p class="line__title"></p>
+      <p class="line__price nums"></p>
+    </div>
+    <div class="line__qty">
+      <button type="button" data-dec aria-label="Quitar uno">–</button>
+      <span data-qty class="nums">1</span>
+      <button type="button" data-inc aria-label="Añadir uno">+</button>
+    </div>
+  </article>
+</template>
+
+<style>
+  .cart { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: 1.1rem; padding-bottom: calc(var(--section) / 2); min-height: 80svh; align-content: start; }
+  .cart__top { grid-column: 1 / span 12; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
+  .cart__mark { grid-column: 1 / span 4; text-decoration: none; }
+  .cart__nav { grid-column: 5 / span 4; display: flex; gap: 1.5rem; }
+  .cart__title { grid-column: 1 / span 9; margin-top: 14vh; font-size: clamp(3rem, 8vw, 8rem); line-height: 0.9; }
+  .cart__empty { grid-column: 1 / span 6; margin-top: 3rem; }
+  .cart__lines { grid-column: 1 / span 7; margin-top: 4rem; display: flex; flex-direction: column; gap: 2rem; }
+  .cart__lines[hidden], .cart__sum[hidden], .cart__empty[hidden] { display: none; }
+  .cart__sum { grid-column: 9 / span 4; margin-top: 4rem; background: var(--surface); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; align-self: start; position: sticky; top: 2rem; }
+  .cart__total { font-family: var(--font-display); font-weight: 800; letter-spacing: -0.03em; font-size: clamp(1.5rem, 2.4vw, 2.25rem); display: flex; justify-content: space-between; }
+  .cart__actions { display: flex; flex-direction: column; gap: 0.75rem; align-items: flex-start; }
+  .cart__actions .button { width: 100%; }
+  .cart__actions button { background: none; padding: 0; cursor: pointer; }
+  .line { display: grid; grid-template-columns: 96px 1fr auto; gap: 1.25rem; align-items: center; }
+  .line img { aspect-ratio: 4 / 5; object-fit: cover; width: 96px; height: auto; }
+  .line__title { font-weight: 500; }
+  .line__qty { display: flex; align-items: center; gap: 0.5rem; }
+  .line__qty button { width: 2.5rem; height: 2.5rem; background: var(--surface); cursor: pointer; font-weight: 500; }
+  .line__qty span { min-width: 1.5rem; text-align: center; }
+  @media (max-width: 47.99em) {
+    .cart { display: block; padding-inline: 16px; }
+    .cart__top { display: flex; justify-content: space-between; }
+    .cart__title { margin-top: 10vh; font-size: 14vw; }
+    .cart__lines, .cart__sum { margin-top: 2rem; }
+    .cart__sum { position: static; }
+  }
+</style>
+
+<script define:vars={{ catalogue, number: site.whatsappNumber }}>
+  window.__catalogue = catalogue;
+  window.__waNumber = number;
+</script>
+<script>
+  import { readCart, setQty, clearCart } from '../scripts/cart';
+  const page = document.querySelector<HTMLElement>('[data-cart-page]');
+  if (page) {
+    const cat = (window as any).__catalogue as Record<string, { title: string; price: number; cover: string }>;
+    const number = (window as any).__waNumber as string;
+    const tpl = document.querySelector<HTMLTemplateElement>('[data-cart-line-tpl]')!;
+    const linesEl = page.querySelector<HTMLElement>('[data-cart-lines]')!;
+    const sumEl = page.querySelector<HTMLElement>('[data-cart-sum]')!;
+    const emptyEl = page.querySelector<HTMLElement>('[data-cart-empty]')!;
+    const totalEl = page.querySelector<HTMLElement>('[data-cart-total]')!;
+    const checkout = page.querySelector<HTMLAnchorElement>('[data-cart-checkout]')!;
+    const paint = () => {
+      const lines = readCart().filter((l) => cat[l.slug]);
+      linesEl.innerHTML = '';
+      let total = 0;
+      const parts: string[] = [];
+      for (const l of lines) {
+        const p = cat[l.slug];
+        const node = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+        const img = node.querySelector('img')!; img.src = (document.documentElement.dataset.root || '/') + p.cover.replace(/^\//, ''); img.alt = p.title;
+        node.querySelector('.line__title')!.textContent = p.title;
+        node.querySelector('.line__price')!.textContent = `S/${p.price} × ${l.qty} = S/${p.price * l.qty}`;
+        node.querySelector('[data-qty]')!.textContent = String(l.qty);
+        node.querySelector('[data-dec]')!.addEventListener('click', () => setQty(l.slug, l.qty - 1));
+        node.querySelector('[data-inc]')!.addEventListener('click', () => setQty(l.slug, l.qty + 1));
+        linesEl.appendChild(node);
+        total += p.price * l.qty;
+        parts.push(`${l.qty} × ${p.title} (S/${p.price * l.qty})`);
+      }
+      const has = lines.length > 0;
+      linesEl.hidden = !has; sumEl.hidden = !has; emptyEl.hidden = has;
+      totalEl.textContent = `S/${total}`;
+      const msg = `Hola Tato, quiero pedir:\n${parts.map((p) => `· ${p}`).join('\n')}\nTotal: S/${total}\n¿Me pasas los datos para pagar por Yape, Plin o tarjeta?`;
+      checkout.href = `https://wa.me/${number}?text=${encodeURIComponent(msg)}`;
+    };
+    document.addEventListener('cart:change', paint);
+    page.querySelector('[data-cart-clear]')!.addEventListener('click', clearCart);
+    paint();
+  }
+</script>

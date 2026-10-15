@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* Brand tokens (kept from the brand: Google colours, canvas grey, ink). Violet left out: one accent only. */
+@theme {
+  --color-paper: #ffffff;
+  --color-canvas: #e9eef6;
+  --color-ink: #1f1f1f;
+  --color-muted: #5f6368;
+  --color-blue: #4285f4;
+  --color-red: #ea4335;
+  --color-yellow: #fbbc05;
+  --color-green: #34a853;
+
+  --font-display: "Unbounded", "Helvetica Neue", Arial, sans-serif;
+  --font-text: "Onest", "Helvetica Neue", Arial, sans-serif;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+}
+
+:root {
+  --bg: var(--color-paper);
+  --surface: var(--color-canvas);
+  --ink: var(--color-ink);
+  --muted: var(--color-muted);
+  --accent: var(--color-blue);
+  --accent-ink: var(--color-paper);
+
+  --step-small: clamp(0.875rem, 0.85rem + 0.1vw, 0.9375rem);     /* 14–15px */
+  --step-body: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);        /* 17–19px */
+  --step-lead: clamp(1.25rem, 1.1rem + 0.7vw, 1.625rem);          /* 20–26px */
+  --step-head: clamp(2rem, 1.3rem + 3.2vw, 4rem);                 /* 32–64px */
+  --step-display: clamp(4.5rem, 9vw, 8.75rem);                    /* 72–140px: the pinned name */
+
+  --margin: clamp(1rem, 2.2vw, 2rem);
+  --gutter: clamp(0.75rem, 1.4vw, 1.5rem);
+  --section: clamp(5rem, 12vw, 13rem);
+  --radius: 0px;
+
+  --t-press: 140ms;
+  --t-hover: 180ms;
+  --t-ui: 240ms;
+  --t-reveal: 800ms;
+}
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: auto; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-text); font-size: var(--step-body); line-height: 1.5;
+  font-kerning: normal; -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+img, video { display: block; max-width: 100%; height: auto; background: var(--surface); }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; }
+:target { scroll-margin-top: 2rem; }
+::selection { background: var(--accent); color: var(--accent-ink); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+/* ---------- type ---------- */
+h1, h2, h3 { font-family: var(--font-display); font-weight: 800; text-wrap: balance; hyphens: none; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1; }
+.display { font-size: var(--step-display); line-height: 0.85; letter-spacing: -0.03em; }
+.head { font-size: var(--step-head); line-height: 1; letter-spacing: -0.03em; }
+.lead { font-size: var(--step-lead); line-height: 1.35; max-width: 40ch; text-wrap: pretty; }
+.small { font-size: var(--step-small); line-height: 1.45; }
+.muted { color: var(--muted); }
+p { max-width: 62ch; text-wrap: pretty; }
+p + p { margin-top: 0.9em; }
+.nums { font-variant-numeric: tabular-nums; }
+.medium { font-weight: 500; }
+
+/* ---------- layout ---------- */
+.wrap { padding-inline: var(--margin); }
+.grid12 { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); }
+.cover { width: 100%; height: 100%; object-fit: cover; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* ---------- controls: one shape, square corners ---------- */
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5em;
+  min-height: 3.25rem; padding: 0 1.5rem; background: var(--accent); color: var(--accent-ink);
+  border-radius: var(--radius); text-decoration: none; white-space: nowrap; font-weight: 500;
+  transition: transform var(--t-press) var(--ease-out), background-color var(--t-hover) ease, color var(--t-hover) ease;
+}
+.button:active { transform: scale(0.97); }
+.button--paper { background: var(--bg); color: var(--ink); }
+.button--ink { background: var(--ink); color: var(--bg); }
+.button--yellow { background: var(--color-yellow); color: var(--ink); }
+.button--wide { width: 100%; }
+.link { text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 0.2em; text-decoration-thickness: 0.07em; transition: text-decoration-color var(--t-hover) ease; }
+.link-plain { text-decoration: underline; text-underline-offset: 0.18em; text-decoration-thickness: 0.07em; }
+@media (hover: hover) and (pointer: fine) {
+  .link:hover { text-decoration-color: currentColor; }
+  .button:hover { filter: brightness(0.92); }
+  .button--paper:hover { filter: none; background: var(--surface); }
+}
+.field { width: 100%; min-height: 3.25rem; padding: 0.7rem 0.9rem; background: var(--surface); border: 0; border-radius: var(--radius); font-size: max(1rem, var(--step-body)); }
+.field:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* ---------- motion helpers (content stays visible without JavaScript) ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-rise] { opacity: 0; transform: translateY(18px); animation: ad-rise var(--t-reveal) var(--ease-out) forwards; animation-delay: calc(var(--i, 0) * 90ms + 120ms); }
+  .js [data-reveal] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease-out), transform 900ms var(--ease-out); transition-delay: calc(var(--i, 0) * 80ms); }
+  .js [data-reveal].is-in { opacity: 1; transform: none; }
+  .js [data-reveal="scale"] { transform: scale(1.04); }
+  .js [data-reveal="left"] { transform: translateX(-24px); }
+  .js [data-reveal="right"] { transform: translateX(24px); }
+  .js [data-reveal="scale"].is-in, .js [data-reveal="left"].is-in, .js [data-reveal="right"].is-in { transform: none; }
+  .js .shutter[data-reveal] { opacity: 1; transform: none; clip-path: inset(0 0 100% 0); transition: clip-path 1100ms var(--ease-in-out); }
+  .js .shutter[data-reveal] > * { transform: scale(1.12); transition: transform 1500ms var(--ease-soft); }
+  .js .shutter[data-reveal].is-in { clip-path: inset(0); }
+  .js .shutter[data-reveal].is-in > * { transform: none; }
+}
+@keyframes ad-rise { to { opacity: 1; transform: none; } }
+
+/* ---------- prose for blog and product pages ---------- */
+.prose { max-width: 62ch; }
+.prose h2 { font-size: var(--step-lead); margin-top: 2.2em; margin-bottom: 0.6em; }
+.prose h3 { font-size: var(--step-body); margin-top: 1.8em; margin-bottom: 0.5em; }
+.prose p { margin-top: 0.9em; }
+.prose ul, .prose ol { margin-top: 0.9em; padding-left: 1.2em; }
+.prose li + li { margin-top: 0.35em; }
+.prose a { text-decoration: underline; text-underline-offset: 0.18em; }
+.prose pre { margin-top: 1em; padding: 1rem 1.2rem; background: var(--surface); overflow-x: auto; font-size: var(--step-small); }
+.prose code { font-size: 0.95em; }
+.prose blockquote { margin-top: 1em; padding-left: 1.2em; font-size: var(--step-lead); line-height: 1.35; }

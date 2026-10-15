@@ -1,0 +1,57 @@
+---
+import { nav, site } from '../lib/site';
+---
+<div class="menu">
+  <a class="menu__cart" href="/carrito" data-cart-link hidden>Carrito <span data-cart-count>0</span></a>
+  <button class="menu__open" type="button" aria-expanded="false" aria-controls="menu-sheet" data-menu-open>Menú</button>
+</div>
+<div class="sheet" id="menu-sheet" hidden data-menu-sheet>
+  <div class="sheet__top">
+    <a href="/" class="sheet__mark">Tato Studio</a>
+    <button class="sheet__close" type="button" data-menu-close>Cerrar</button>
+  </div>
+  <nav class="sheet__nav" aria-label="Secciones">
+    {nav.map((n) => <a href={n.href} data-menu-close>{n.label}</a>)}
+    <a href="/carrito" data-menu-close>Carrito</a>
+  </nav>
+  <div class="sheet__foot">
+    <a class="button" href={`https://wa.me/${site.whatsappNumber}?text=${encodeURIComponent('Hola Tato, quiero aprender a hacer videos con IA')}`}>Escríbeme</a>
+    <p class="small"><a class="link-plain" href={site.tiktok}>TikTok</a> · <a class="link-plain" href={site.instagram}>Instagram</a> · <a class="link-plain" href={site.facebook}>Facebook</a></p>
+  </div>
+</div>
+
+<style>
+  .menu { position: fixed; top: 1.1rem; right: var(--margin); z-index: 40; display: flex; gap: 1.25rem; align-items: center; font-size: var(--step-small); font-weight: 500; color: var(--header-ink, var(--ink)); }
+  .menu__cart { text-decoration: none; }
+  .menu__cart[hidden] { display: none; }
+  .menu__open { cursor: pointer; padding: 0.4rem 0; }
+  .sheet { position: fixed; inset: 0; z-index: 50; background: var(--ink); color: var(--bg); display: grid; grid-template-rows: auto 1fr auto; padding: 1.1rem var(--margin) 1.5rem; transform-origin: top right; transition: opacity var(--t-ui) var(--ease-out), transform var(--t-ui) var(--ease-out); }
+  .sheet[hidden] { display: none; }
+  .sheet.is-closing { opacity: 0; transform: scale(0.97) translateY(-6px); pointer-events: none; }
+  .sheet__top { display: flex; justify-content: space-between; align-items: center; font-size: var(--step-small); font-weight: 500; }
+  .sheet__mark { text-decoration: none; }
+  .sheet__close { cursor: pointer; padding: 0.4rem 0; }
+  .sheet__nav { display: flex; flex-direction: column; justify-content: center; gap: 0.35em; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.03em; font-size: clamp(2rem, 7vw, 5rem); line-height: 1; }
+  .sheet__nav a { text-decoration: none; transition: transform var(--t-hover) var(--ease-out), opacity var(--t-hover) ease; }
+  @media (hover: hover) and (pointer: fine) {
+    .sheet__nav:hover a:not(:hover) { opacity: 0.45; }
+    .sheet__nav a:hover { transform: translateX(12px); }
+  }
+  .sheet__foot { display: flex; flex-wrap: wrap; gap: 1.5rem; align-items: center; justify-content: space-between; }
+  @media (prefers-reduced-motion: no-preference) {
+    .js .sheet:not([hidden]) { animation: sheet-in var(--t-ui) var(--ease-out); }
+  }
+  @keyframes sheet-in { from { opacity: 0; transform: scale(0.97) translateY(-6px); } }
+</style>
+
+<script>
+  const open = document.querySelector<HTMLButtonElement>('[data-menu-open]');
+  const sheet = document.querySelector<HTMLElement>('[data-menu-sheet]');
+  if (open && sheet) {
+    const show = () => { sheet.hidden = false; open.setAttribute('aria-expanded', 'true'); document.body.style.overflow = 'hidden'; (sheet.querySelector('a') as HTMLElement)?.focus(); };
+    const hide = () => { sheet.hidden = true; open.setAttribute('aria-expanded', 'false'); document.body.style.overflow = ''; open.focus(); };
+    open.addEventListener('click', show);
+    sheet.querySelectorAll('[data-menu-close]').forEach((el) => el.addEventListener('click', hide));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !sheet.hidden) hide(); });
+  }
+</script>

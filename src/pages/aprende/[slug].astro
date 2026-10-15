@@ -1,0 +1,60 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Footer from '../../components/Footer.astro';
+import { wa } from '../../lib/site';
+export async function getStaticPaths() {
+  const products = await getCollection('products');
+  return products.map((product) => ({ params: { slug: product.id }, props: { product } }));
+}
+const { product } = Astro.props;
+const { Content } = await render(product);
+const d = product.data;
+---
+<Base title={`${d.title} · Tato Studio`} description={d.short} image={d.cover}>
+  <main class="product wrap">
+    <header class="product__top">
+      <a class="small medium product__mark" href="/">Tato Studio</a>
+      <nav class="small medium product__nav" aria-label="Principal"><a class="link" href="/aprende">Aprende</a><a class="link" href="/carrito">Carrito</a></nav>
+    </header>
+    <figure class="product__cover shutter" data-reveal>
+      <img src={d.cover} alt={d.coverAlt} width="720" height="1280" decoding="async" />
+    </figure>
+    <div class="product__info">
+      <h1 class="product__title">{d.title}</h1>
+      <p class="lead">{d.short}</p>
+      {d.when && <p class="medium">{d.when}</p>}
+      <ul class="product__includes">
+        {d.includes.map((l) => <li>{l}</li>)}
+      </ul>
+      <p class="product__price nums">S/{d.price} {d.compareAt && <s class="muted">S/{d.compareAt}</s>} {d.kind === 'taller' && <span class="small muted">preventa</span>}</p>
+      <div class="product__actions">
+        <button class="button" type="button" data-add={product.id}>{d.cta}</button>
+        <a class="link-plain medium" href={wa(`Hola Tato, quiero: ${d.title} (S/${d.price})`)}>o pídelo por WhatsApp</a>
+      </div>
+      <div class="prose product__body"><Content /></div>
+    </div>
+  </main>
+  <Footer />
+</Base>
+<style>
+  .product { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: 1.1rem; padding-bottom: calc(var(--section) / 2); }
+  .product__top { grid-column: 1 / span 12; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); margin-bottom: 10vh; }
+  .product__mark { grid-column: 1 / span 4; text-decoration: none; }
+  .product__nav { grid-column: 5 / span 4; display: flex; gap: 1.5rem; }
+  .product__cover { grid-column: 1 / span 5; margin: 0; aspect-ratio: 4 / 5; overflow: hidden; position: sticky; top: 2rem; }
+  .product__cover img { width: 100%; height: 100%; object-fit: cover; }
+  .product__info { grid-column: 7 / span 6; display: flex; flex-direction: column; gap: 1.25rem; }
+  .product__title { font-size: clamp(2rem, 4vw, 4rem); line-height: 0.95; }
+  .product__includes { padding-left: 1.2em; }
+  .product__price { font-family: var(--font-display); font-weight: 800; font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -0.03em; line-height: 1; display: flex; align-items: baseline; gap: 0.75rem; }
+  .product__price s { font-size: 0.45em; font-family: var(--font-text); font-weight: 400; letter-spacing: 0; }
+  .product__actions { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+  .product__body { margin-top: 1.5rem; }
+  @media (max-width: 47.99em) {
+    .product { display: block; padding-inline: 16px; }
+    .product__top { display: flex; justify-content: space-between; margin-bottom: 2rem; }
+    .product__cover { position: static; margin-bottom: 1.5rem; }
+    .product__title { font-size: 10vw; }
+  }
+</style>

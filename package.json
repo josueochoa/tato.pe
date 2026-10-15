@@ -1,0 +1,25 @@
+{
+  "name": "tato.pe",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build && node scripts/relativize.mjs",
+    "preview": "astro preview",
+    "astro": "astro",
+    "export": "npm run build && rm -f tato.pe-static.zip && cd dist && zip -qr ../tato.pe-static.zip . -x \".DS_Store\" \"*/.DS_Store\" && cd .. && ls -lh tato.pe-static.zip",
+    "build:cf": "astro build",
+    "export:cf": "npm run build:cf && rm -f tato.pe-cloudflare.zip && cd dist && zip -qr ../tato.pe-cloudflare.zip . -x \".DS_Store\" \"*/.DS_Store\" && cd .. && ls -lh tato.pe-cloudflare.zip"
+  },
+  "dependencies": {
+    "@astrojs/mdx": "^8.0.3",
+    "@astrojs/sitemap": "^3.7.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.3.8",
+    "tailwindcss": "^4.3.3"
+  }
+}
