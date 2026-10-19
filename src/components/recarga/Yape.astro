@@ -10,7 +10,7 @@ const digits = number.replace(/\D/g, '');
   <p class="yape__choice small" data-choice hidden></p>
 
   <div class="scan">
-    <img class="scan__img" src={qr} alt={`Código QR de Yape de ${holder}`} width="600" height="600" decoding="async" data-qr />
+    <img class="scan__img" src={qr} alt={`Código QR de Yape de ${holder}`} width="1132" height="1601" decoding="async" data-qr />
     <p class="scan__missing small">Aquí va tu QR.<br />Guárdalo en <code>public/assets/qr-yape.png</code></p>
     <span class="scan__line" aria-hidden="true"></span>
   </div>
@@ -58,7 +58,7 @@ const digits = number.replace(/\D/g, '');
   /* ---------- QR in a scanner frame ---------- */
   .scan {
     --corner: 2.25rem;
-    position: relative; width: min(100%, 20rem); aspect-ratio: 1; margin: 1.25rem auto 0; padding: 0.85rem;
+    position: relative; width: min(100%, 18rem); aspect-ratio: 1132 / 1601; margin: 1.25rem auto 0; padding: 0.85rem;
     background:
       linear-gradient(var(--neon), var(--neon)) top left / var(--corner) 3px,
       linear-gradient(var(--neon), var(--neon)) top left / 3px var(--corner),
@@ -71,7 +71,7 @@ const digits = number.replace(/\D/g, '');
     background-repeat: no-repeat;
     overflow: hidden;
   }
-  .scan__img { width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 0.5rem; }
+  .scan__img { width: 100%; height: 100%; object-fit: cover; background: var(--yape); }
   .scan__missing { display: none; position: absolute; inset: 0.85rem; place-content: center; text-align: center; border: 2px dashed var(--line); color: var(--muted); padding: 1rem; }
   .scan__missing code { color: var(--ink); font-size: 0.85em; word-break: break-all; }
   .yape.is-missing .scan__img { visibility: hidden; }
