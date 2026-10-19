@@ -48,16 +48,17 @@ npm run export:cf  # build:cf + tato.pe-cloudflare.zip
 `/recarga/` es el centro de recarga de energía de servidores y buzón de sugerencias. Todo lo editable está en el objeto `CONFIG` al inicio de `src/pages/recarga.astro`: monto actual, meta, ruta del QR, titular, número Yape, botones de aporte, a dónde se envía el buzón y los últimos mecenas del muro.
 
 - **QR:** guarda tu imagen en `public/assets/qr-yape.png`. Mientras no exista, la tarjeta muestra un recuadro "Aquí va tu QR" y el botón de descarga queda desactivado.
-- **Buzón:** `submit.mode = 'whatsapp'` abre un chat con el mensaje armado (funciona sin servidor). Con `'webhook'` o `'both'` y una `webhookUrl`, hace un POST con el JSON `{ handle, recargo, monto, operacion, sugerencia, fecha, origen }`. Para Google Sheets, un Apps Script publicado como aplicación web basta:
+- **Buzón:** `submit.mode = 'whatsapp'` abre un chat con el mensaje armado (funciona sin servidor). Con `'webhook'` o `'both'` y una `webhookUrl`, hace un POST con el JSON `{ handle, recargo, nombreYape, monto, operacion, sugerencia, fecha, origen }`. Para Google Sheets, un Apps Script publicado como aplicación web basta:
 
 ```js
 function doPost(e) {
   const d = JSON.parse(e.postData.contents);
-  SpreadsheetApp.getActive().getSheets()[0].appendRow([d.fecha, d.handle, d.recargo, d.monto, d.operacion, d.sugerencia]);
+  SpreadsheetApp.getActive().getSheets()[0].appendRow([d.fecha, d.handle, d.recargo, d.nombreYape, d.monto, d.operacion, d.sugerencia]);
   return ContentService.createTextOutput('ok');
 }
 ```
 
+- **Verificar un aporte:** busca en tu historial de Yape un pago con el "Nombre en Yape", el monto y la hora del mensaje. Si coincide, agrega su @ a `recentSupporters` y súbelo a `currentAmount`.
 - La suma a la batería y la tarjeta en el muro al enviar son solo visuales para quien envía. Los montos reales se actualizan a mano en `currentAmount` y `recentSupporters` después de verificar el Yape.
 - El aviso legal está en `src/components/recarga/Aviso.astro`: no lo edites, debe ir palabra por palabra.
 

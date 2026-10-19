@@ -159,21 +159,23 @@ type State = 'crit' | 'mid' | 'full';
     showError('');
     if (!form.checkValidity()) {
       form.reportValidity();
-      showError('Revisa los campos marcados: tu @usuario, si recargaste y tu sugerencia.');
+      showError('Revisa los campos marcados: tu @usuario, si recargaste (con tu nombre en Yape) y tu sugerencia.');
       return;
     }
     const fd = new FormData(form);
     const handle = '@' + String(fd.get('handle') || '').trim().replace(/^@+/, '').replace(/\s+/g, '');
     const recargo = fd.get('recargo') === 'si';
+    const nombreYape = recargo ? String(fd.get('nombreYape') || '').trim() : '';
     const monto = recargo ? Number(fd.get('monto') || 0) : 0;
     const operacion = recargo ? String(fd.get('operacion') || '').trim() : '';
     const sugerencia = String(fd.get('sugerencia') || '').trim();
-    const payload = { handle, recargo, monto, operacion, sugerencia, fecha: new Date().toISOString(), origen: location.href };
+    const payload = { handle, recargo, nombreYape, monto, operacion, sugerencia, fecha: new Date().toISOString(), origen: location.href };
 
     const lines = [
       'Hola Tato, te dejo esto desde el Buzón de Sugerencias de tato.pe/recarga:',
       `• Usuario: ${handle}`,
       `• Recarga voluntaria: ${recargo ? 'Sí' : 'No, solo sugerencia'}`,
+      ...(nombreYape ? [`• Nombre en Yape: ${nombreYape}`] : []),
       ...(recargo && monto ? [`• Monto aproximado: ${soles(monto)}`] : []),
       ...(operacion ? [`• Últimos dígitos de operación: ${operacion}`] : []),
       `• Sugerencia para el próximo tributo: ${sugerencia}`,

@@ -22,6 +22,11 @@
 
     <fieldset class="f f--paid" data-paid hidden disabled>
       <legend class="f__label">Para priorizar tu saludo en el Muro de Productores</legend>
+      <div>
+        <label class="f__sub small" for="bz-nombre">Nombre como aparece en tu Yape</label>
+        <input class="field" id="bz-nombre" name="nombreYape" type="text" required minlength="2" maxlength="60" autocomplete="name" placeholder="Ej.: Juan P." />
+        <p class="f__help small">Solo lo usamos para encontrar tu Yape y verificarlo. No sale en el muro ni en el video.</p>
+      </div>
       <div class="f__pair">
         <div>
           <label class="f__sub small" for="bz-monto">Monto aproximado (S/)</label>
@@ -63,7 +68,7 @@
   .f__label { font-weight: 500; padding: 0; line-height: 1.3; }
   .f__sub { display: block; color: var(--muted); margin-bottom: 0.35rem; }
   .f__help { color: var(--muted); max-width: none; }
-  .f__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .f__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; align-items: end; margin-top: 0.4rem; }
   .f__area { resize: vertical; min-height: 7.5rem; line-height: 1.45; }
   .buzon .field { border: 1px solid var(--line); }
   .buzon .field::placeholder { color: #8a7f96; }
