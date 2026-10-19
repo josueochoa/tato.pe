@@ -1,0 +1,173 @@
+---
+/** Hero: the server battery and the four "preview your aporte" buttons. The script in src/scripts/recarga.ts drives it. */
+interface Tier { amount: number; icon: string; name: string; }
+interface Props { current: number; goal: number; pct: number; tiers: Tier[]; }
+const { current, goal, pct, tiers } = Astro.props;
+
+// Fixed scatter so the markup is the same on every build.
+const particles = Array.from({ length: 14 }, (_, i) => ({
+  x: (i * 37) % 92 + 4,
+  s: 2 + (i % 3) * 2,
+  d: 2.6 + (i % 5) * 0.55,
+  delay: -((i * 0.73) % 4).toFixed(2),
+}));
+const wave = 'M0 10 Q 75 0 150 10 T 300 10 T 450 10 T 600 10 T 750 10 T 900 10 T 1050 10 T 1200 10 V20 H0 Z';
+---
+<section class="hero" aria-labelledby="recarga-title">
+  <div class="hero__text">
+    <p class="hero__eyebrow small">Buzón de sugerencias de la comunidad + Barra general de energía del canal</p>
+    <h1 class="hero__title" id="recarga-title">Recarga el servidor</h1>
+    <p class="hero__lead">Apoya al canal recargando la batería de servidores para seguir creando tributos.</p>
+    <p class="hero__note small">Aporte voluntario de mecenazgo / Invítale un café al editor. Cada sol paga GPU, licencias y horas de edición.</p>
+  </div>
+
+  <div class="meter">
+    <div class="bat" data-bat style={`--level:${pct.toFixed(2)};--base:${pct.toFixed(2)}`} aria-hidden="true">
+      <div class="bat__cap"></div>
+      <div class="bat__body">
+        <div class="bat__fill">
+          <svg class="bat__wave bat__wave--back" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d={wave} /></svg>
+          <svg class="bat__wave" viewBox="0 0 1200 20" preserveAspectRatio="none"><path d={wave} /></svg>
+        </div>
+        <div class="bat__particles">
+          {particles.map((p) => <i style={`--x:${p.x}%;--s:${p.s}px;--d:${p.d}s;--delay:${p.delay}s`}></i>)}
+        </div>
+        <div class="bat__ticks"></div>
+        <div class="bat__mark"><span>hoy</span></div>
+        <svg class="bat__bolt" viewBox="0 0 40 80"><path d="M24 0 4 46h14l-4 34 22-48H22z" /></svg>
+      </div>
+    </div>
+
+    <div class="meter__read" role="status" aria-live="polite">
+      <p class="meter__label small">⚡ Energía del servidor IA</p>
+      <p class="meter__pct nums" data-pct>{Math.round(pct)}%</p>
+      <p class="meter__state small" data-state-label>{pct < 25 ? 'Estado crítico' : pct <= 65 ? 'Cargando' : 'Energía radiante'}</p>
+      <p class="meter__goal small">Meta de recarga del lote actual de renders</p>
+      <p class="meter__amount nums" data-amount>S/ {current} / S/ {goal}</p>
+      <p class="meter__preview small nums" data-preview hidden></p>
+    </div>
+  </div>
+
+  <div class="sim">
+    <p class="sim__label small">Simula tu inyección de energía</p>
+    <div class="sim__grid">
+      {tiers.map((t) => (
+        <button class="tier" type="button" data-tier data-amount={t.amount} data-name={t.name} aria-pressed="false">
+          <span class="tier__amt nums">{t.icon} + S/ {t.amount}</span>
+          <span class="tier__name small">{t.name}</span>
+        </button>
+      ))}
+    </div>
+    <p class="sim__msg" data-msg aria-live="polite"></p>
+  </div>
+</section>
+
+<style>
+  .hero { max-width: 72rem; margin: 0 auto; padding-top: clamp(2rem, 7vh, 4rem); display: grid; gap: 2rem; }
+  .hero__eyebrow { color: var(--neon); font-weight: 500; max-width: 34ch; }
+  .hero__title { font-size: clamp(2.6rem, min(12vw, 6.4vw + 1rem), 6rem); line-height: 0.9; margin-top: 0.75rem; }
+  .hero__lead { font-size: var(--step-lead); line-height: 1.3; margin-top: 1rem; max-width: 28ch; }
+  .hero__note { color: var(--muted); margin-top: 0.75rem; max-width: 40ch; }
+
+  /* ---------- battery ---------- */
+  .meter { display: grid; grid-template-columns: minmax(0, 9fr) minmax(0, 11fr); gap: 1.25rem; align-items: center; }
+  .bat { --inset: 6px; position: relative; }
+  .bat__cap { width: 38%; height: 0.85rem; margin: 0 auto; background: var(--line); border: 2px solid rgb(255 255 255 / 0.28); border-bottom: 0; }
+  .bat__body {
+    position: relative; height: clamp(14rem, 40svh, 27rem); overflow: hidden;
+    border: 2px solid rgb(255 255 255 / 0.28);
+    background: rgb(255 255 255 / 0.04);
+    -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+    box-shadow: inset 0 0 0 var(--inset) rgb(0 0 0 / 0.35), 0 0 48px -12px var(--c2);
+    transition: box-shadow 500ms ease;
+  }
+  .bat__body::after { /* glass sheen */
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(100deg, transparent 8%, rgb(255 255 255 / 0.16) 14%, transparent 26%, transparent 78%, rgb(255 255 255 / 0.07) 86%, transparent 92%);
+  }
+  .bat__fill, .bat__particles {
+    position: absolute; left: var(--inset); right: var(--inset); bottom: var(--inset);
+    height: calc((100% - var(--inset) * 2) * var(--level) / 100);
+    transition: height 900ms var(--ease-out);
+  }
+  .bat__fill { background: linear-gradient(to top, var(--c1), var(--c2)); box-shadow: 0 0 24px var(--c2); transition: height 900ms var(--ease-out), box-shadow 500ms ease; }
+  .bat__particles { overflow: hidden; }
+  .bat__wave { position: absolute; left: 0; bottom: calc(100% - 1px); width: 200%; height: 12px; fill: var(--c2); animation: bat-wave 3.4s linear infinite; }
+  .bat__wave--back { opacity: 0.45; height: 16px; animation-duration: 5.2s; animation-direction: reverse; }
+  .bat__particles i {
+    position: absolute; bottom: 0; left: var(--x); width: var(--s); height: var(--s); background: #fff; opacity: 0;
+    animation: bat-rise var(--d) linear infinite; animation-delay: var(--delay);
+  }
+  .bat__ticks { /* ten cells, brutalist */
+    position: absolute; inset: var(--inset); pointer-events: none;
+    background: repeating-linear-gradient(to top, transparent 0 calc(10% - 2px), rgb(13 10 18 / 0.55) calc(10% - 2px) 10%);
+  }
+  .bat__mark {
+    position: absolute; left: 0; right: 0; bottom: calc(var(--inset) + (100% - var(--inset) * 2) * var(--base) / 100);
+    border-top: 2px dashed #fff; opacity: 0; transition: opacity 300ms ease, bottom 900ms var(--ease-out);
+  }
+  .bat__mark span { position: absolute; right: 6px; top: 2px; font-size: 0.6875rem; font-weight: 500; background: var(--bg); padding: 0 4px; }
+  .bat.has-preview .bat__mark { opacity: 0.9; }
+  .bat__bolt { position: absolute; left: 50%; top: 50%; width: 40%; translate: -50% -50%; fill: #fff; opacity: 0; filter: drop-shadow(0 0 12px var(--c2)); }
+
+  .rc[data-state="crit"] .bat__body { animation: bat-pulse 1.1s ease-in-out infinite; }
+  .bat.is-surge .bat__body { animation: bat-surge 900ms var(--ease-out); }
+  .bat.is-surge .bat__bolt { animation: bat-bolt 900ms steps(1) forwards; }
+
+  @keyframes bat-wave { to { transform: translateX(-50%); } }
+  @keyframes bat-rise { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 0.85; } 100% { transform: translateY(-26rem); opacity: 0; } }
+  @keyframes bat-pulse { 50% { box-shadow: inset 0 0 0 var(--inset) rgb(0 0 0 / 0.35), 0 0 64px -4px var(--crit); border-color: var(--crit); } }
+  @keyframes bat-surge {
+    0% { transform: none; filter: none; }
+    10% { transform: translateX(-3px); filter: brightness(1.8) saturate(1.4); }
+    20% { transform: translateX(3px); }
+    30% { transform: translateX(-2px); filter: brightness(1.2); }
+    45% { transform: translateX(2px); filter: brightness(1.6); }
+    60% { transform: none; filter: brightness(1.1); }
+    100% { transform: none; filter: none; }
+  }
+  @keyframes bat-bolt { 0% { opacity: 1; } 12% { opacity: 0; } 22% { opacity: 1; } 34% { opacity: 0.2; } 48% { opacity: 0.9; } 70%, 100% { opacity: 0; } }
+
+  .meter__read { container-type: inline-size; min-width: 0; }
+  .meter__label { text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; color: var(--muted); }
+  .meter__pct {
+    font-family: var(--font-display); font-weight: 800; letter-spacing: -0.04em; line-height: 0.9;
+    font-size: clamp(2.5rem, 30cqi, 7.5rem); color: var(--c2); text-shadow: 0 0 28px var(--c2); margin-top: 0.4rem;
+    transition: color 400ms ease, text-shadow 400ms ease;
+  }
+  .meter__state { display: inline-block; margin-top: 0.75rem; padding: 0.2em 0.6em; border: 1px solid var(--c2); color: var(--c2); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .meter__goal { margin-top: 1.25rem; color: var(--muted); max-width: 22ch; }
+  .meter__amount { font-family: var(--font-display); font-weight: 800; font-size: clamp(1.125rem, 11cqi, 1.75rem); margin-top: 0.3rem; white-space: nowrap; }
+  .meter__preview { margin-top: 0.4rem; color: var(--neon); font-weight: 500; }
+
+  /* ---------- simulator ---------- */
+  .sim__label { color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .sim__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.6rem; margin-top: 0.75rem; }
+  .tier {
+    display: grid; gap: 0.25rem; justify-items: start; text-align: left; min-height: 4.75rem; padding: 0.85rem 0.9rem;
+    background: rgb(255 255 255 / 0.04); border: 1px solid var(--line); cursor: pointer;
+    transition: transform var(--t-press) var(--ease-out), border-color var(--t-hover) ease, background-color var(--t-hover) ease, box-shadow var(--t-hover) ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tier:active { transform: scale(0.97); }
+  .tier__amt { white-space: nowrap; font-family: var(--font-display); font-weight: 800; font-size: clamp(1.0625rem, 4.6vw, 1.375rem); line-height: 1.1; }
+  .tier__name { color: var(--muted); }
+  .tier[aria-pressed="true"] { border-color: var(--neon); background: rgb(0 255 135 / 0.1); box-shadow: 0 0 0 1px var(--neon), 0 0 32px -8px var(--neon); }
+  .tier[aria-pressed="true"] .tier__name { color: var(--ink); }
+  @media (hover: hover) and (pointer: fine) { .tier:hover { border-color: var(--yape-text); } }
+  .sim__msg { min-height: 3em; margin-top: 1rem; font-weight: 500; color: var(--ink); max-width: 44ch; }
+  .sim__msg:empty { min-height: 0; margin: 0; }
+
+  @media (min-width: 60em) {
+    .hero { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: 3rem; row-gap: 2.5rem; align-items: center; }
+    .hero__text { grid-column: 1; }
+    .meter { grid-column: 2; grid-row: 1 / span 2; }
+    .sim { grid-column: 1; }
+  }
+  @media (min-width: 75em) { .sim__grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bat__wave, .bat__particles i, .rc[data-state="crit"] .bat__body, .bat.is-surge .bat__body, .bat.is-surge .bat__bolt { animation: none; }
+    .bat__fill, .bat__particles, .bat__mark { transition: none; }
+  }
+</style>

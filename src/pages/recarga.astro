@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+import { site, wa } from '../lib/site';
+import Bateria from '../components/recarga/Bateria.astro';
+import Yape from '../components/recarga/Yape.astro';
+import Buzon from '../components/recarga/Buzon.astro';
+import Muro from '../components/recarga/Muro.astro';
+import Aviso from '../components/recarga/Aviso.astro';
+
+/* ============================================================================================
+ * CONFIG · lo único que necesitas tocar para actualizar /recarga
+ * ============================================================================================ */
+const CONFIG = {
+  // Soles recaudados en el lote actual de renders. Súbelo cuando verifiques nuevos Yapes.
+  currentAmount: 68,
+  // Meta del lote actual. La batería se llena al 100 % cuando currentAmount llega aquí.
+  goalAmount: 150,
+  // Tu QR de Yape. Guarda la imagen en public/assets/qr-yape.png (o cambia la ruta).
+  qrImageUrl: '/assets/qr-yape.png',
+  // Nombre del titular tal como aparece en Yape. SAMPLE: confírmalo.
+  holderName: 'Carlos Quispe',
+  // Número asociado a Yape (se puede copiar). SAMPLE: confirma que es el de tu Yape.
+  yapeNumber: '961 662 512',
+  // Segundos de render que "impulsa" cada sol, para el mensaje de los botones (S/ 5 × 3 = 15 s).
+  secondsPerSol: 3,
+  // Botones del simulador de aporte.
+  tiers: [
+    { amount: 2, icon: '⚡', name: 'Chispa de Render' },
+    { amount: 5, icon: '🔋', name: 'Celda de GPU' },
+    { amount: 10, icon: '🚀', name: 'Sobrecarga Pro' },
+    { amount: 20, icon: '💎', name: 'Reactor VIP' },
+  ],
+  // A dónde va el buzón:
+  //   'whatsapp' → abre un chat con el mensaje armado (funciona ya, sin servidor)
+  //   'webhook'  → POST JSON a webhookUrl (Google Apps Script/Sheets, Supabase Edge Function, Make, n8n…)
+  //   'both'     → las dos cosas
+  submit: {
+    mode: 'whatsapp' as 'whatsapp' | 'webhook' | 'both',
+    webhookUrl: '',
+    whatsappNumber: site.whatsappNumber,
+  },
+  // Últimos mecenas para el muro (los más nuevos primero). SAMPLE: reemplaza por los reales.
+  // No pongas montos: el muro agradece, no es un ranking.
+  recentSupporters: [
+    { handle: '@lacombidelas7', suggestion: 'Un tributo a los recreos del colegio en los 90, con la canchita de fulbito', when: 'hace 2 h' },
+    { handle: '@cuyfan_huaraz', suggestion: 'El Cuy de Valdelomar perdido en la Cordillera Blanca', when: 'hace 5 h' },
+    { handle: '@telenovelera.pe', suggestion: 'Parodia de telenovela zombie en la Plaza de Armas', when: 'ayer' },
+    { handle: '@arcadedelbarrio', suggestion: 'Homenaje a las maquinitas del barrio con fichas de 50 céntimos', when: 'ayer' },
+    { handle: '@duna.ica', suggestion: 'Una carrera de areneros en Huacachina estilo película de los 80', when: 'hace 2 días' },
+    { handle: '@pollitoconpapas', suggestion: 'Tributo a la pollería de domingo con toda la familia', when: 'hace 3 días' },
+  ],
+};
+/* ============================================================================================ */
+
+// Only what the browser needs; the rest is rendered here.
+const clientConfig = {
+  currentAmount: CONFIG.currentAmount,
+  goalAmount: CONFIG.goalAmount,
+  secondsPerSol: CONFIG.secondsPerSol,
+  submit: CONFIG.submit,
+};
+const pct = Math.max(0, Math.min(100, (CONFIG.currentAmount / CONFIG.goalAmount) * 100));
+const state = pct < 25 ? 'crit' : pct <= 65 ? 'mid' : 'full';
+---
+<Base title="Tato Studio · Recarga el servidor" description="Apoya al canal recargando la batería de servidores para seguir creando tributos. Aporte voluntario por Yape y buzón de sugerencias de la comunidad." theme="#0d0a12" menu={false}>
+  <main class="rc" data-recarga data-state={state}>
+    <header class="rc__top">
+      <a class="small medium" href="/">Tato Studio</a>
+      <a class="small link" href="/links/">Más links</a>
+    </header>
+
+    <Bateria current={CONFIG.currentAmount} goal={CONFIG.goalAmount} pct={pct} tiers={CONFIG.tiers} />
+
+    <div class="rc__pair">
+      <Yape qr={CONFIG.qrImageUrl} holder={CONFIG.holderName} number={CONFIG.yapeNumber} />
+      <Buzon />
+    </div>
+
+    <Muro supporters={CONFIG.recentSupporters} />
+
+    <Aviso />
+
+    <p class="rc__foot small">
+      © 2026 Tato Studio · <a class="link" href="/terminos/">Términos</a> · <a class="link" href={wa('Hola Tato, tengo una consulta sobre la recarga del servidor')}>WhatsApp</a> · <a class="link" href={site.tiktok}>TikTok</a>
+    </p>
+  </main>
+  <script id="recarga-config" type="application/json" set:html={JSON.stringify(clientConfig)}></script>
+  <script src="../scripts/recarga.ts"></script>
+</Base>
+
+<style>
+  :global(body:has(.rc)) { background: #0d0a12; }
+  .rc {
+    /* This page's palette: Yape purple, neon green, amber, red. Square corners stay, as on the rest of the site. */
+    --yape: #742384;
+    --yape-text: #c784dc;
+    --neon: #00ff87;
+    --amber: #ffb020;
+    --crit: #ff3b47;
+    --bg: #0d0a12;
+    --ink: #f4f0f7;
+    --muted: #b8acc4;
+    --surface: #1c1624;
+    --line: rgb(255 255 255 / 0.16);
+    --accent: var(--neon);
+    --accent-ink: #0d0a12;
+    /* Charge colours, set by state (the script keeps data-state current). */
+    --c1: #c76a00;
+    --c2: var(--amber);
+    min-height: 100svh;
+    background:
+      radial-gradient(60rem 40rem at 50% -10%, rgb(116 35 132 / 0.35), transparent 70%),
+      var(--bg);
+    color: var(--ink);
+    padding: 0 16px 2.5rem;
+    overflow-x: clip;
+  }
+  .rc[data-state="crit"] { --c1: #9e0016; --c2: var(--crit); }
+  .rc[data-state="mid"] { --c1: #c76a00; --c2: var(--amber); }
+  .rc[data-state="full"] { --c1: var(--yape); --c2: var(--neon); }
+
+  .rc__top { display: flex; justify-content: space-between; align-items: center; padding: 1.1rem 0 0; max-width: 72rem; margin: 0 auto; }
+  .rc__top a { text-decoration: none; }
+  .rc__top .link { color: var(--muted); }
+
+  .rc__pair { display: grid; gap: 1.5rem; max-width: 72rem; margin: 3.5rem auto 0; align-items: start; }
+  @media (min-width: 60em) {
+    .rc { padding-inline: var(--margin); }
+    .rc__pair { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 2rem; }
+  }
+  .rc__foot { max-width: 72rem; margin: 2rem auto 0; color: var(--muted); }
+  .rc__foot .link { color: var(--ink); }
+</style>

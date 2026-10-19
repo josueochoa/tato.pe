@@ -43,6 +43,24 @@ npm run export:cf  # build:cf + tato.pe-cloudflare.zip
 
 `/links/` es una pantalla tipo Linktree: avatar, nombre y una columna de botones. Apunta ahí la bio de TikTok, Instagram y el Linktree. Los botones se editan en `src/pages/links/index.astro`.
 
+## Recarga (bio de TikTok)
+
+`/recarga/` es el centro de recarga de energía de servidores y buzón de sugerencias. Todo lo editable está en el objeto `CONFIG` al inicio de `src/pages/recarga.astro`: monto actual, meta, ruta del QR, titular, número Yape, botones de aporte, a dónde se envía el buzón y los últimos mecenas del muro.
+
+- **QR:** guarda tu imagen en `public/assets/qr-yape.png`. Mientras no exista, la tarjeta muestra un recuadro "Aquí va tu QR" y el botón de descarga queda desactivado.
+- **Buzón:** `submit.mode = 'whatsapp'` abre un chat con el mensaje armado (funciona sin servidor). Con `'webhook'` o `'both'` y una `webhookUrl`, hace un POST con el JSON `{ handle, recargo, monto, operacion, sugerencia, fecha, origen }`. Para Google Sheets, un Apps Script publicado como aplicación web basta:
+
+```js
+function doPost(e) {
+  const d = JSON.parse(e.postData.contents);
+  SpreadsheetApp.getActive().getSheets()[0].appendRow([d.fecha, d.handle, d.recargo, d.monto, d.operacion, d.sugerencia]);
+  return ContentService.createTextOutput('ok');
+}
+```
+
+- La suma a la batería y la tarjeta en el muro al enviar son solo visuales para quien envía. Los montos reales se actualizan a mano en `currentAmount` y `recentSupporters` después de verificar el Yape.
+- El aviso legal está en `src/components/recarga/Aviso.astro`: no lo edites, debe ir palabra por palabra.
+
 ## Carrito
 
 El carrito vive en `localStorage` (`src/scripts/cart.ts`). "Pagar por WhatsApp" arma el pedido con los productos y el total y abre un chat. No hay pasarela de pago: el cobro es por Yape, Plin o tarjeta a mano. Si más adelante se conecta una pasarela (Culqi, Mercado Pago, Stripe), el lugar es `src/pages/carrito.astro`.

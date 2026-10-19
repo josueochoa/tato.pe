@@ -1,0 +1,109 @@
+---
+/** The Yape card: QR in a scanner frame, download button (the phone can't scan its own screen), copyable data, what the mecenas gets. */
+interface Props { qr: string; holder: string; number: string; }
+const { qr, holder, number } = Astro.props;
+const digits = number.replace(/\D/g, '');
+---
+<section class="yape" id="yape" data-yape aria-labelledby="yape-title">
+  <p class="yape__eyebrow small">Aporte voluntario de mecenazgo</p>
+  <h2 class="yape__title" id="yape-title">Recarga con Yape</h2>
+  <p class="yape__choice small" data-choice hidden></p>
+
+  <div class="scan">
+    <img class="scan__img" src={qr} alt={`Código QR de Yape de ${holder}`} width="600" height="600" decoding="async" data-qr />
+    <p class="scan__missing small">Aquí va tu QR.<br />Guárdalo en <code>public/assets/qr-yape.png</code></p>
+    <span class="scan__line" aria-hidden="true"></span>
+  </div>
+
+  <a class="button button--wide yape__download" href={qr} download="qr-yape-tato.png" data-qr-download>📲 Descargar QR para subirlo en tu Yape</a>
+  <p class="yape__steps small">1. Descarga el QR → 2. Abre Yape y dale a "Escanear QR" → 3. Elige "Subir imagen de galería"</p>
+  <p class="yape__hint small">¿No se descarga dentro de TikTok? Mantén presionado el QR y elige "Guardar imagen".</p>
+
+  <dl class="yape__data">
+    <div class="yape__row">
+      <dt class="small">Número Yape</dt>
+      <dd class="nums">{number}</dd>
+      <button class="yape__copy small" type="button" data-copy={digits}>Copiar</button>
+    </div>
+    <div class="yape__row">
+      <dt class="small">Titular</dt>
+      <dd>{holder}</dd>
+      <button class="yape__copy small" type="button" data-copy={holder}>Copiar</button>
+    </div>
+  </dl>
+  <p class="sr-only" aria-live="polite" data-copy-status></p>
+
+  <h3 class="yape__perks-title">Beneficios del mecenas</h3>
+  <ul class="yape__perks small">
+    <li>Tu @usuario de TikTok aparece en el <strong>Muro de Productores Oficiales</strong> al final del próximo video.</li>
+    <li>También sale en el muro de esta página. Déjalo en el buzón de abajo.</li>
+    <li>Es un aporte voluntario para los servidores del canal. No compras ni encargas ningún video ni personaje.</li>
+  </ul>
+</section>
+
+<style>
+  .yape {
+    position: relative; padding: 1.5rem 1.1rem;
+    background: linear-gradient(180deg, rgb(116 35 132 / 0.32), rgb(13 10 18 / 0.92) 55%);
+    border: 1px solid rgb(199 132 220 / 0.55);
+    box-shadow: 0 0 0 1px rgb(0 255 135 / 0.12), 0 0 70px -24px var(--yape);
+    scroll-margin-top: 1rem;
+    transition: box-shadow 500ms ease, border-color 500ms ease;
+  }
+  .yape.is-lit { border-color: var(--neon); box-shadow: 0 0 0 2px var(--neon), 0 0 80px -12px var(--neon); }
+  .yape__eyebrow { color: var(--yape-text); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .yape__title { font-size: clamp(1.75rem, 8vw, 2.5rem); margin-top: 0.4rem; }
+  .yape__choice { margin-top: 0.75rem; color: var(--neon); font-weight: 500; }
+
+  /* ---------- QR in a scanner frame ---------- */
+  .scan {
+    --corner: 2.25rem;
+    position: relative; width: min(100%, 20rem); aspect-ratio: 1; margin: 1.25rem auto 0; padding: 0.85rem;
+    background:
+      linear-gradient(var(--neon), var(--neon)) top left / var(--corner) 3px,
+      linear-gradient(var(--neon), var(--neon)) top left / 3px var(--corner),
+      linear-gradient(var(--neon), var(--neon)) top right / var(--corner) 3px,
+      linear-gradient(var(--neon), var(--neon)) top right / 3px var(--corner),
+      linear-gradient(var(--neon), var(--neon)) bottom left / var(--corner) 3px,
+      linear-gradient(var(--neon), var(--neon)) bottom left / 3px var(--corner),
+      linear-gradient(var(--neon), var(--neon)) bottom right / var(--corner) 3px,
+      linear-gradient(var(--neon), var(--neon)) bottom right / 3px var(--corner);
+    background-repeat: no-repeat;
+    overflow: hidden;
+  }
+  .scan__img { width: 100%; height: 100%; object-fit: contain; background: #fff; padding: 0.5rem; }
+  .scan__missing { display: none; position: absolute; inset: 0.85rem; place-content: center; text-align: center; border: 2px dashed var(--line); color: var(--muted); padding: 1rem; }
+  .scan__missing code { color: var(--ink); font-size: 0.85em; word-break: break-all; }
+  .yape.is-missing .scan__img { visibility: hidden; }
+  .yape.is-missing .scan__missing { display: grid; }
+  .scan__line {
+    position: absolute; left: 0.85rem; right: 0.85rem; top: 0.85rem; height: 2px; background: var(--neon);
+    box-shadow: 0 0 14px 3px rgb(0 255 135 / 0.6); animation: scan-move 2.6s ease-in-out infinite alternate;
+  }
+  @keyframes scan-move { to { top: calc(100% - 0.85rem - 2px); } }
+
+  .yape__download { margin-top: 1.25rem; min-height: 3.75rem; white-space: normal; text-align: center; line-height: 1.2; font-family: var(--font-display); font-weight: 800; font-size: clamp(0.9375rem, 4vw, 1.0625rem); text-transform: uppercase; letter-spacing: -0.01em; }
+  .yape__download[aria-disabled="true"] { opacity: 0.4; pointer-events: none; }
+  .yape__steps { margin-top: 0.75rem; font-weight: 500; text-align: center; max-width: none; }
+  .yape__hint { margin-top: 0.35rem; color: var(--muted); text-align: center; max-width: none; }
+
+  .yape__data { margin: 1.5rem 0 0; display: grid; gap: 0.5rem; }
+  .yape__row { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-rows: auto auto; column-gap: 1rem; align-items: center; padding: 0.7rem 0.85rem; background: rgb(255 255 255 / 0.05); border: 1px solid var(--line); }
+  .yape__row dt { color: var(--muted); }
+  .yape__row dd { margin: 0; grid-row: 2; font-weight: 500; overflow-wrap: anywhere; }
+  .yape__copy {
+    grid-column: 2; grid-row: 1 / span 2; min-height: 2.75rem; min-width: 6.5rem; padding: 0 0.9rem;
+    background: transparent; border: 1px solid var(--yape-text); color: var(--ink); font-weight: 500; cursor: pointer;
+    transition: transform var(--t-press) var(--ease-out), background-color var(--t-hover) ease, border-color var(--t-hover) ease, color var(--t-hover) ease;
+  }
+  .yape__copy:active { transform: scale(0.96); }
+  .yape__copy.is-done { background: var(--neon); border-color: var(--neon); color: var(--accent-ink); }
+
+  .yape__perks-title { font-size: 1rem; margin-top: 1.75rem; letter-spacing: -0.01em; }
+  .yape__perks { margin: 0.75rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.45rem; color: var(--muted); }
+  .yape__perks strong { color: var(--ink); font-weight: 500; }
+  .yape__perks li::marker { content: "💜  "; }
+
+  @media (min-width: 60em) { .yape { padding: 2rem 1.75rem; } }
+  @media (prefers-reduced-motion: reduce) { .scan__line { animation: none; top: 50%; } }
+</style>

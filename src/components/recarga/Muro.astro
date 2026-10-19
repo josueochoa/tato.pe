@@ -1,0 +1,70 @@
+---
+/** The supporters' wall: a ticker of handles, then a card per mecenas with the tribute they suggested. No amounts, no order by money. */
+interface Supporter { handle: string; suggestion: string; when?: string; }
+interface Props { supporters: Supporter[]; }
+const { supporters } = Astro.props;
+---
+<section class="muro" id="muro" aria-labelledby="muro-title">
+  <h2 class="muro__title" id="muro-title">Sobrevivientes que mantienen vivo el Servidor</h2>
+  <p class="muro__intro small">El muro de mecenas de la comunidad. Salen también en el Muro de Productores Oficiales del próximo video.</p>
+
+  {supporters.length > 0 && (
+    <div class="tick" aria-hidden="true">
+      <div class="tick__track">
+        {[0, 1].map(() => (
+          <span class="tick__run">
+            {supporters.map((s) => <span class="tick__item">⚡ {s.handle}</span>)}
+          </span>
+        ))}
+      </div>
+    </div>
+  )}
+
+  <ul class="muro__grid" data-wall>
+    {supporters.map((s) => (
+      <li class="card">
+        <span class="card__badge small">💜 Mecenas Oficial</span>
+        <p class="card__handle">{s.handle}</p>
+        <p class="card__idea small">“{s.suggestion}”</p>
+        {s.when && <p class="card__when small">{s.when}</p>}
+      </li>
+    ))}
+  </ul>
+
+  <template data-card-tpl>
+    <li class="card card--new">
+      <span class="card__badge small">💜 Mecenas · por verificar</span>
+      <p class="card__handle"></p>
+      <p class="card__idea small"></p>
+      <p class="card__when small">ahora</p>
+    </li>
+  </template>
+</section>
+
+<style>
+  .muro { max-width: 72rem; margin: 4.5rem auto 0; }
+  .muro__title { font-size: clamp(1.75rem, 8vw, 3.75rem); line-height: 0.95; max-width: 16ch; }
+  .muro__intro { color: var(--muted); margin-top: 0.85rem; }
+
+  .tick { margin: 1.5rem -16px 0; overflow: hidden; border-block: 1px solid var(--line); background: rgb(116 35 132 / 0.18); }
+  .tick__track { display: flex; width: max-content; animation: tick-move 28s linear infinite; }
+  .tick__run { display: flex; }
+  .tick__item { padding: 0.7rem 1.25rem; font-family: var(--font-display); font-weight: 800; font-size: 0.9375rem; white-space: nowrap; color: var(--neon); }
+  @keyframes tick-move { to { transform: translateX(-50%); } }
+
+  .muro__grid { list-style: none; padding: 0; margin: 1.5rem 0 0; display: grid; gap: 0.6rem; }
+  .card { padding: 1rem 1rem 1.1rem; border: 1px solid var(--line); background: rgb(255 255 255 / 0.03); display: grid; gap: 0.5rem; align-content: start; }
+  .card__badge { justify-self: start; padding: 0.15em 0.55em; border: 1px solid var(--neon); color: var(--neon); font-weight: 500; }
+  .card__handle { font-family: var(--font-display); font-weight: 800; font-size: 1.125rem; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+  .card__idea { color: var(--ink); }
+  .card__when { color: var(--muted); }
+  .card--new { border-color: var(--neon); box-shadow: 0 0 40px -16px var(--neon); }
+  .card--new .card__badge { border-color: var(--amber); color: var(--amber); }
+
+  @media (min-width: 40em) { .muro__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (min-width: 60em) {
+    .tick { margin-inline: calc(var(--margin) * -1); }
+    .muro__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (prefers-reduced-motion: reduce) { .tick__track { animation: none; } }
+</style>

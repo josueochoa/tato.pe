@@ -1,0 +1,95 @@
+---
+/** Suggestion box + credits sign-up. Where it sends is set in CONFIG.submit (src/pages/recarga.astro). */
+---
+<section class="buzon" id="buzon" aria-labelledby="buzon-title">
+  <h2 class="buzon__title" id="buzon-title"><span aria-hidden="true">📬</span> Buzón de Sugerencias para el Próximo Tributo + Registro de Créditos</h2>
+  <p class="buzon__intro small">Deja tu idea para el próximo tributo o parodia nostálgica. Si recargaste, regístrate para salir en los créditos.</p>
+
+  <form class="buzon__form" data-buzon novalidate>
+    <div class="f">
+      <label class="f__label" for="bz-handle">Tu @usuario de TikTok o Instagram</label>
+      <input class="field" id="bz-handle" name="handle" type="text" required maxlength="40" autocomplete="nickname" autocapitalize="off" spellcheck="false" placeholder="@tuusuario" pattern="@?[A-Za-z0-9._]{2,39}" />
+      <p class="f__help small">Para ponerte en los créditos finales del video.</p>
+    </div>
+
+    <fieldset class="f">
+      <legend class="f__label">¿Hiciste una recarga voluntaria al servidor?</legend>
+      <div class="seg">
+        <label class="seg__opt"><input type="radio" name="recargo" value="si" required /><span>Sí, acabo de recargar energía 💜</span></label>
+        <label class="seg__opt"><input type="radio" name="recargo" value="no" required /><span>Solo vengo a dejar una sugerencia creativa</span></label>
+      </div>
+    </fieldset>
+
+    <fieldset class="f f--paid" data-paid hidden disabled>
+      <legend class="f__label">Para priorizar tu saludo en el Muro de Productores</legend>
+      <div class="f__pair">
+        <div>
+          <label class="f__sub small" for="bz-monto">Monto aproximado (S/)</label>
+          <input class="field nums" id="bz-monto" name="monto" type="number" inputmode="decimal" min="1" max="5000" step="0.5" placeholder="5" />
+        </div>
+        <div>
+          <label class="f__sub small" for="bz-op">Últimos dígitos de operación</label>
+          <input class="field nums" id="bz-op" name="operacion" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{2,6}" placeholder="opcional" />
+        </div>
+      </div>
+    </fieldset>
+
+    <div class="f">
+      <label class="f__label" for="bz-idea">Tu sugerencia creativa para el próximo Tributo / Parodia Nostálgica</label>
+      <textarea class="field f__area" id="bz-idea" name="sugerencia" required minlength="8" maxlength="500" rows="4" placeholder="Ej.: un tributo a los recreos del colegio en los 90"></textarea>
+      <p class="f__help small"><span class="nums" data-count>0</span>/500 · Es una idea libre: el editor elige qué crear y no hay compromiso de hacerla.</p>
+    </div>
+
+    <p class="buzon__error small" data-error role="alert" hidden></p>
+    <button class="button button--wide buzon__send" type="submit" data-send>Enviar al buzón ⚡</button>
+  </form>
+
+  <div class="done" data-done hidden tabindex="-1">
+    <p class="done__big">¡Energía recibida!</p>
+    <p class="done__text" data-done-text>Tu sugerencia ya está en el buzón.</p>
+    <p class="done__text small" data-done-wa hidden>¿No se abrió WhatsApp? <a class="link-plain" href="#" target="_blank" rel="noopener" data-wa-link>Envíalo desde aquí</a>.</p>
+    <button class="button button--paper done__again" type="button" data-again>Enviar otra sugerencia</button>
+  </div>
+</section>
+
+<style>
+  .buzon { padding: 1.5rem 1.1rem; border: 1px solid var(--line); background: rgb(255 255 255 / 0.03); scroll-margin-top: 1rem; }
+  .buzon__title { font-size: clamp(1.25rem, 5.6vw, 1.875rem); line-height: 1.05; letter-spacing: -0.02em; }
+  .buzon__intro { color: var(--muted); margin-top: 0.75rem; }
+  .buzon__form { display: grid; gap: 1.4rem; margin-top: 1.5rem; }
+
+  .f { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 0.5rem; }
+  .f[hidden] { display: none; }
+  .f__label { font-weight: 500; padding: 0; line-height: 1.3; }
+  .f__sub { display: block; color: var(--muted); margin-bottom: 0.35rem; }
+  .f__help { color: var(--muted); max-width: none; }
+  .f__pair { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+  .f__area { resize: vertical; min-height: 7.5rem; line-height: 1.45; }
+  .buzon .field { border: 1px solid var(--line); }
+  .buzon .field::placeholder { color: #8a7f96; }
+  .buzon .field:user-invalid { border-color: var(--crit); }
+
+  .seg { display: grid; gap: 0.5rem; }
+  .seg__opt { position: relative; display: block; cursor: pointer; }
+  .seg__opt input { position: absolute; z-index: 1; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+  .seg__opt span {
+    display: flex; align-items: center; min-height: 3.25rem; padding: 0.7rem 0.9rem 0.7rem 2.6rem; position: relative;
+    background: var(--surface); border: 1px solid var(--line); line-height: 1.3;
+    transition: border-color var(--t-hover) ease, background-color var(--t-hover) ease;
+  }
+  .seg__opt span::before { content: ""; position: absolute; left: 0.9rem; top: 50%; width: 1rem; height: 1rem; translate: 0 -50%; border: 2px solid var(--muted); }
+  .seg__opt input:checked + span { border-color: var(--neon); background: rgb(0 255 135 / 0.08); }
+  .seg__opt input:checked + span::before { border-color: var(--neon); background: var(--neon); box-shadow: inset 0 0 0 2px var(--surface); }
+  .seg__opt input:focus-visible + span { outline: 2px solid var(--neon); outline-offset: 2px; }
+
+  .buzon__error { color: var(--crit); font-weight: 500; }
+  .buzon__send { min-height: 3.75rem; font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.01em; }
+  .buzon__send[disabled] { opacity: 0.6; }
+
+  .done { margin-top: 1.5rem; padding: 1.5rem 1.1rem; border: 1px solid var(--neon); background: rgb(0 255 135 / 0.08); box-shadow: 0 0 60px -20px var(--neon); outline: none; }
+  .done__big { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.03em; font-size: clamp(1.75rem, 8vw, 2.5rem); line-height: 1; color: var(--neon); }
+  .done__text { margin-top: 0.75rem; }
+  .done__again { margin-top: 1.25rem; }
+
+  @media (min-width: 60em) { .buzon { padding: 2rem 1.75rem; } }
+</style>
