@@ -1,0 +1,38 @@
+---
+/** One page per category that has notes: /blog/categoria/noticias, /blog/categoria/prompts… */
+import Base from '../../../layouts/Base.astro';
+import PageHead from '../../../components/PageHead.astro';
+import Footer from '../../../components/Footer.astro';
+import BlogMotion from '../../../components/blog/BlogMotion.astro';
+import CategoryBand from '../../../components/blog/CategoryBand.astro';
+import Feature from '../../../components/blog/Feature.astro';
+import PostGrid from '../../../components/blog/PostGrid.astro';
+import AprendeCta from '../../../components/blog/AprendeCta.astro';
+import { categories, getCategory } from '../../../lib/blog';
+import { getPosts } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return categories
+    .filter((c) => posts.some((p) => p.data.category === c.id))
+    .map((c) => ({ params: { categoria: c.id } }));
+}
+
+const { categoria } = Astro.params;
+const category = getCategory(categoria)!;
+const posts = await getPosts();
+const [first, ...rest] = posts.filter((p) => p.data.category === category.id);
+---
+<Base title={`${category.label} · Blog · Tato Studio`} description={category.intro}>
+  <BlogMotion />
+  <main>
+    <div data-ink="#1f1f1f">
+      <PageHead title={category.label} intro={category.intro} />
+      <CategoryBand posts={posts} current={category.id} />
+      {first && <Feature post={first} />}
+      <PostGrid posts={rest} />
+    </div>
+    <AprendeCta />
+  </main>
+  <Footer />
+</Base>

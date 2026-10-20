@@ -34,7 +34,7 @@ npm run export:cf  # build:cf + tato.pe-cloudflare.zip
 - `src/pages/index.astro`: la página principal, armada con las secciones de `src/components/home/`.
 - `src/lib/site.ts`: WhatsApp, redes, links de afiliado, planes y precios del video personalizado, menú.
 - `src/content/products/*.md`: el taller y el pack (precio, cupos, fecha, qué incluye). Cada uno tiene su página en `/aprende/<slug>` y su ticket en la portada.
-- `src/content/blog/*.mdx`: notas del blog (`/blog`). Portada opcional en `cover`.
+- `src/content/blog/*.mdx`: notas del blog (`/blog`). Portada opcional en `cover` (las imágenes nuevas van en `public/notas/`). Cada nota lleva una `category` (noticias, prompts, herramientas, personajes), cada una con un color de la marca, y cada categoría con notas tiene su página en `/blog/categoria/<id>`. Las categorías se editan en `src/lib/blog.ts`. `video` (opcional) pone un clip propio en bucle en vez de la portada. Cómo publicar una nota paso a paso: `CLAUDE.md`.
 - `src/styles/global.css`: tokens de marca (`@theme`), tipografía, botones y helpers de movimiento.
 - `public/video/` y `public/poster/`: clips comprimidos para web y sus fotogramas. Los originales están en `assets/` (fuera de git).
 - `public/found/`: fotos de Huaraz, Ica y Lima de Wikimedia Commons con sus créditos en `credits.json` (ya citados en el pie).

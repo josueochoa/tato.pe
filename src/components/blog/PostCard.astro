@@ -1,0 +1,42 @@
+---
+/**
+ * One note as a card in its category's colour: the picture in a vertical frame, the title on the colour,
+ * and the facts underneath on the page. On the phone it turns into a row so titles stay readable.
+ */
+import NoteMedia from './NoteMedia.astro';
+import { getCategory, fmtDate, readingTime } from '../../lib/blog';
+import type { Post } from '../../lib/posts';
+interface Props { post: Post; i?: number; }
+const { post, i = 0 } = Astro.props;
+const cat = getCategory(post.data.category);
+---
+<a class="card" href={`/blog/${post.id}`} style={`--cat:${cat?.color ?? 'var(--surface)'}; --i:${i % 3}`} data-reveal>
+  <span class="card__field">
+    <NoteMedia post={post} class="card__media" />
+    <span class="card__title">{post.data.title}</span>
+  </span>
+  <span class="card__meta small">
+    <span class="medium">{cat?.label}</span>
+    <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+    <span>{readingTime(post.body)} min</span>
+  </span>
+</a>
+<style>
+  .card { display: flex; flex-direction: column; gap: 0.8rem; text-decoration: none; color: var(--ink); }
+  .card__field { display: flex; flex-direction: column; gap: 1.1rem; padding: 0.75rem 0.75rem 1.4rem; background: var(--cat); transition: transform var(--t-hover) var(--ease-out); }
+  .card :global(.card__media) { aspect-ratio: 3 / 4; }
+  /* 19px and up: large text, so ink keeps its contrast on all four colours */
+  .card__title { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.03em; line-height: 1.02; font-size: clamp(1.2rem, 1.7vw, 1.75rem); text-wrap: balance; }
+  .card__meta { display: flex; flex-wrap: wrap; gap: 0.2rem 1rem; color: var(--muted); }
+  .card__meta .medium { color: var(--ink); }
+  .card:active .card__field { transform: scale(0.98); }
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover .card__field { transform: translateY(-6px); }
+    .card:hover :global(.card__media) > * { transform: scale(1.05); }
+  }
+  @media (max-width: 47.99em) {
+    .card__field { flex-direction: row; align-items: flex-start; gap: 0.9rem; padding: 0.6rem; }
+    .card :global(.card__media) { flex: 0 0 38%; }
+    .card__title { flex: 1; font-size: 1.2rem; padding: 0.35rem 0.3rem 0.35rem 0; }
+  }
+</style>

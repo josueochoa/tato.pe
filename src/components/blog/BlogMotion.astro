@@ -1,0 +1,15 @@
+---
+/**
+ * Page-to-page motion for the blog only. In browsers with cross-document view transitions,
+ * the band stays put while it changes colour and a card's picture travels into the note.
+ * Other browsers simply load the page.
+ */
+---
+<style is:global>
+  @view-transition { navigation: auto; }
+  @media (prefers-reduced-motion: reduce) { @view-transition { navigation: none; } }
+  ::view-transition-group(*) { animation-duration: 460ms; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 260ms; }
+  /* While the new page is being captured, nothing waits hidden for its entrance. */
+  html:active-view-transition [data-reveal] { opacity: 1 !important; transform: none !important; }
+</style>

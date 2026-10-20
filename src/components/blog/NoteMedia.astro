@@ -1,0 +1,23 @@
+---
+/**
+ * A note's picture: its muted loop when it has one (the cover is the poster), otherwise the cover.
+ * The name lets the picture travel from the card to the note when the browser supports view transitions.
+ */
+import type { Post } from '../../lib/posts';
+interface Props { post: Post; class?: string; eager?: boolean; width?: number; height?: number; }
+const { post, class: cls, eager = false, width = 720, height = 960 } = Astro.props;
+const { cover, coverAlt, video } = post.data;
+---
+{(video || cover) && (
+  <span class:list={['media', cls]} style={`view-transition-name: nota-${post.id}`}>
+    {video ? (
+      <video src={video} poster={cover} muted loop playsinline preload="none" data-loop aria-hidden="true" width={width} height={height}></video>
+    ) : (
+      <img src={cover} alt={coverAlt ?? ''} loading={eager ? 'eager' : 'lazy'} decoding="async" width={width} height={height} />
+    )}
+  </span>
+)}
+<style>
+  .media { display: block; overflow: hidden; background: var(--ink); }
+  .media img, .media video { width: 100%; height: 100%; object-fit: cover; background: var(--ink); transition: transform 700ms var(--ease-soft); }
+</style>

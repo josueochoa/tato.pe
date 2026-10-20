@@ -9,8 +9,11 @@ interface Props {
   image?: string;
   theme?: string;
   menu?: boolean;
+  /** 'article' for blog notes, so WhatsApp and Facebook show them as a post with its date. */
+  type?: 'website' | 'article';
+  published?: Date;
 }
-const { title, description, image = '/poster/transformacion.jpg', theme = '#ffffff', menu = true } = Astro.props;
+const { title, description, image = '/poster/transformacion.jpg', theme = '#ffffff', menu = true, type = 'website', published } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
 ---
 <!doctype html>
@@ -25,8 +28,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? site.url);
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(image, canonical)} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
+    {published && <meta property="article:published_time" content={published.toISOString()} />}
     <meta property="og:locale" content="es_PE" />
+    <meta name="twitter:card" content="summary_large_image" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

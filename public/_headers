@@ -15,3 +15,6 @@
 
 /found/*
   Cache-Control: public, max-age=31536000, immutable
+
+/notas/*
+  Cache-Control: public, max-age=31536000, immutable

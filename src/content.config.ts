@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { categoryIds, defaultCategory } from './lib/blog';
 
 const blog = defineCollection({
   loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/blog' }),
@@ -7,8 +8,10 @@ const blog = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
+    category: z.enum(categoryIds).default(defaultCategory), // ids in src/lib/blog.ts
     cover: z.string().optional(),      // path under /public, e.g. /poster/afhs-joel.jpg
     coverAlt: z.string().optional(),
+    video: z.string().optional(),      // muted loop under /public/video, own or client work only; cover is its poster
     tags: z.array(z.string()).default([]),
     draft: z.boolean().default(false),
   }),

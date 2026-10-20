@@ -1,0 +1,24 @@
+---
+/** The blog's close: most readers come from the taller, so the next step is Aprende. */
+---
+<section class="cta" data-ink="#ffffff">
+  <div class="cta__in wrap">
+    <h2 class="display cta__title" data-reveal>Aprende a hacerlo</h2>
+    <p class="lead cta__text" data-reveal style="--i:1">Si quieres hacer estos videos tú mismo, el taller en vivo y el pack de prompts están en Aprende.</p>
+    <span class="cta__action" data-reveal style="--i:2"><a class="button cta__button" href="/aprende">Quiero aprender</a></span>
+  </div>
+</section>
+<style>
+  .cta { background: var(--ink); color: var(--bg); }
+  .cta__in { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-items: end; padding-block: clamp(5rem, 10vw, 9rem); }
+  .cta__title { grid-column: 1 / -1; font-size: clamp(3rem, 8.5vw, 8.75rem); }
+  .cta__text { grid-column: 1 / span 6; margin-top: 2rem; }
+  .cta__action { grid-column: 9 / span 4; justify-self: end; margin-top: 2rem; }
+  @media (max-width: 47.99em) {
+    .cta__in { display: block; padding: 4rem 16px; }
+    .cta__title { font-size: 12.5vw; }
+    .cta__text { margin-top: 1.25rem; }
+    .cta__action { display: block; margin-top: 2rem; }
+    .cta__button { width: 100%; }
+  }
+</style>
