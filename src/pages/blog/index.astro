@@ -2,16 +2,29 @@
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import Footer from '../../components/Footer.astro';
-import CategoryNav from '../../components/blog/CategoryNav.astro';
-import PostList from '../../components/blog/PostList.astro';
+import BlogMotion from '../../components/blog/BlogMotion.astro';
+import CategoryBand from '../../components/blog/CategoryBand.astro';
+import Feature from '../../components/blog/Feature.astro';
+import PostGrid from '../../components/blog/PostGrid.astro';
+import AprendeCta from '../../components/blog/AprendeCta.astro';
+import { categoryHref } from '../../lib/blog';
 import { getPosts } from '../../lib/posts';
 const posts = await getPosts();
+const [first, ...rest] = posts;
+const hasPrompts = posts.some((p) => p.data.category === 'prompts');
 ---
-<Base title="Blog · Tato Studio" description="Noticias, prompts, herramientas y cómo hago cada video. Notas cortas, en español.">
+<Base title="Blog · Tato Studio" description="Noticias, prompts listos para copiar, herramientas y cómo hago los personajes de mis videos con IA.">
+  <BlogMotion />
   <main>
-    <PageHead title="Blog" intro="Noticias, los prompts de los videos, lo que cambia en cada herramienta y cómo hago los personajes. Notas cortas." />
-    <CategoryNav posts={posts} />
-    <PostList posts={posts} />
+    <div data-ink="#1f1f1f">
+      <PageHead title="Blog">
+        Lo que aprendo haciendo videos con IA, contado corto.{hasPrompts && <> Si vienes del taller, <a class="link-plain" href={categoryHref('prompts')}>empieza por los prompts</a>.</>}
+      </PageHead>
+      <CategoryBand posts={posts} />
+      {first && <Feature post={first} />}
+      <PostGrid posts={rest} />
+    </div>
+    <AprendeCta />
   </main>
   <Footer />
 </Base>

@@ -11,12 +11,13 @@ const { title, intro } = Astro.props;
     <a class="link" href="/blog">Blog</a>
   </nav>
   <h1 class="ph__title">{title}</h1>
-  {intro && <p class="lead ph__intro">{intro}</p>}
+  {(intro || Astro.slots.has('default')) && <p class="lead ph__intro">{intro}<slot /></p>}
 </header>
 <style>
   .ph { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); padding-top: 1.1rem; }
   .ph__mark { grid-column: 1 / span 4; text-decoration: none; }
   .ph__nav { grid-column: 5 / span 5; display: flex; gap: 1.5rem; }
+  .ph__nav a { white-space: nowrap; }
   .ph__title { grid-column: 1 / span 9; margin-top: 18vh; font-size: clamp(3rem, 8vw, 8rem); line-height: 0.9; }
   .ph__intro { grid-column: 1 / span 6; margin-top: 1.5rem; }
   @media (max-width: 47.99em) {

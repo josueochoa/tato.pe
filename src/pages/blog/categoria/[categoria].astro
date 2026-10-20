@@ -3,8 +3,11 @@
 import Base from '../../../layouts/Base.astro';
 import PageHead from '../../../components/PageHead.astro';
 import Footer from '../../../components/Footer.astro';
-import CategoryNav from '../../../components/blog/CategoryNav.astro';
-import PostList from '../../../components/blog/PostList.astro';
+import BlogMotion from '../../../components/blog/BlogMotion.astro';
+import CategoryBand from '../../../components/blog/CategoryBand.astro';
+import Feature from '../../../components/blog/Feature.astro';
+import PostGrid from '../../../components/blog/PostGrid.astro';
+import AprendeCta from '../../../components/blog/AprendeCta.astro';
 import { categories, getCategory } from '../../../lib/blog';
 import { getPosts } from '../../../lib/posts';
 
@@ -18,13 +21,18 @@ export async function getStaticPaths() {
 const { categoria } = Astro.params;
 const category = getCategory(categoria)!;
 const posts = await getPosts();
-const inCategory = posts.filter((p) => p.data.category === category.id);
+const [first, ...rest] = posts.filter((p) => p.data.category === category.id);
 ---
 <Base title={`${category.label} · Blog · Tato Studio`} description={category.intro}>
+  <BlogMotion />
   <main>
-    <PageHead title={category.label} intro={category.intro} />
-    <CategoryNav posts={posts} current={category.id} />
-    <PostList posts={inCategory} />
+    <div data-ink="#1f1f1f">
+      <PageHead title={category.label} intro={category.intro} />
+      <CategoryBand posts={posts} current={category.id} />
+      {first && <Feature post={first} />}
+      <PostGrid posts={rest} />
+    </div>
+    <AprendeCta />
   </main>
   <Footer />
 </Base>

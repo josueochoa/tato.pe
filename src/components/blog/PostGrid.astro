@@ -1,0 +1,26 @@
+---
+/** Notes as cards: three across on a wide screen, two on a tablet, one row each on the phone. */
+import PostCard from './PostCard.astro';
+import type { Post } from '../../lib/posts';
+interface Props { posts: Post[]; title?: string; cols?: 3 | 4; }
+const { posts, title, cols = 3 } = Astro.props;
+---
+{posts.length > 0 && (
+  <section class="grid-block" aria-label={title ?? 'Más notas'}>
+    {title && <h2 class="head wrap grid-block__title" data-reveal>{title}</h2>}
+    <div class="grid wrap" style={`--cols:${cols}`}>
+      {posts.map((p, i) => <PostCard post={p} i={i} />)}
+    </div>
+  </section>
+)}
+<style>
+  .grid-block { padding-block: 4.5rem calc(var(--section) / 2); }
+  .grid-block__title { margin-bottom: 2.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(var(--cols), minmax(0, 1fr)); column-gap: var(--gutter); row-gap: 3.5rem; align-items: start; }
+  @media (max-width: 63.99em) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 47.99em) {
+    .grid-block { padding-block: 2.5rem 4rem; }
+    .grid-block__title { margin-bottom: 1.5rem; padding-inline: 16px; }
+    .grid { grid-template-columns: 1fr; row-gap: 1.75rem; padding-inline: 16px; }
+  }
+</style>

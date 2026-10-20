@@ -1,0 +1,65 @@
+---
+/** The newest note, large: its vertical clip or picture beside a full field of its category's colour. */
+import NoteMedia from './NoteMedia.astro';
+import { getCategory, fmtDate, readingTime } from '../../lib/blog';
+import type { Post } from '../../lib/posts';
+interface Props { post: Post; }
+const { post } = Astro.props;
+const cat = getCategory(post.data.category);
+---
+<a class="feat wrap" href={`/blog/${post.id}`} style={`--cat:${cat?.color ?? 'var(--surface)'}`}>
+  <span class="feat__frame" data-reveal="scale"><NoteMedia post={post} class="feat__media" eager width={720} height={1280} /></span>
+  <span class="feat__field" data-reveal="right" style="--i:1">
+    <span class="feat__box">
+      <h2 class="feat__title">{post.data.title}</h2>
+      <p class="feat__lead">{post.data.description}</p>
+    </span>
+  </span>
+  <span class="feat__foot" data-reveal style="--i:2">
+    <span class="feat__meta small">
+      <span class="medium">{cat?.label}</span>
+      <time datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+      <span>{readingTime(post.body)} min de lectura</span>
+    </span>
+    <span class="button button--ink feat__go">Leer la nota</span>
+  </span>
+</a>
+<style>
+  .feat { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: 1fr auto; column-gap: var(--gutter); margin-top: 4rem; text-decoration: none; color: var(--ink); }
+  .feat:last-child { margin-bottom: calc(var(--section) / 2); }  /* a category with a single note: room before the close */
+  .feat__frame { grid-column: 1 / span 4; grid-row: 1 / span 2; display: block; }
+  .feat :global(.feat__media) { aspect-ratio: 9 / 16; max-height: 82vh; width: 100%; }
+  .feat__field { grid-column: 5 / -1; grid-row: 1; display: flex; }
+  .feat__box { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 1.5rem; padding: clamp(1.5rem, 3vw, 3rem); background: var(--cat); transition: transform var(--t-hover) var(--ease-out); }
+  .feat__title { font-size: clamp(2.1rem, 3.6vw, 4.25rem); line-height: 0.95; letter-spacing: -0.035em; }
+  /* 24px and up: large text, readable in ink on every brand colour */
+  .feat__lead { font-size: max(1.5rem, var(--step-lead)); line-height: 1.3; max-width: 34ch; }
+  .feat__foot { grid-column: 5 / -1; grid-row: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem 2rem; padding-top: 1.25rem; }
+  .feat__meta { display: flex; flex-wrap: wrap; gap: 0.2rem 1.25rem; color: var(--muted); }
+  .feat__meta .medium { color: var(--ink); }
+  .feat:active .feat__box { transform: scale(0.99); }
+  @media (prefers-reduced-motion: no-preference) {
+    /* The picture settles slowly into its frame: the page's one slow move when the note has no clip. */
+    .feat :global(.feat__media img) { animation: feat-drift 14s var(--ease-soft); }
+  }
+  @keyframes feat-drift { from { transform: scale(1.12); } }
+  @media (hover: hover) and (pointer: fine) {
+    .feat:hover .feat__box { transform: translateY(-6px); }
+    .feat:hover :global(.feat__media) > * { transform: scale(1.04); }
+    .feat:hover .feat__go { filter: none; background: var(--cat); color: var(--ink); }
+  }
+  @media (max-width: 63.99em) {
+    .feat__frame { grid-column: 1 / span 5; }
+    .feat__field, .feat__foot { grid-column: 6 / -1; }
+    .feat__title { font-size: clamp(1.9rem, 4.2vw, 2.6rem); }
+  }
+  @media (max-width: 47.99em) {
+    .feat { display: block; margin-top: 2rem; padding-inline: 16px; }
+    .feat:last-child { margin-bottom: 4rem; }
+    .feat :global(.feat__media) { aspect-ratio: 4 / 5; max-height: none; }
+    .feat__box { padding: 1.4rem 1.25rem 1.6rem; gap: 1rem; }
+    .feat__title { font-size: 7.6vw; }
+    .feat__foot { flex-direction: column; align-items: stretch; }
+    .feat__go { width: 100%; }
+  }
+</style>
