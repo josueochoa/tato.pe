@@ -1,0 +1,25 @@
+---
+/** The row of categories above the notes: Todo first, then only the categories that have notes. */
+import { categories, categoryHref } from '../../lib/blog';
+import type { Post } from '../../lib/posts';
+interface Props { posts: Post[]; current?: string; }
+const { posts, current } = Astro.props;
+const count = (id: string) => posts.filter((p) => p.data.category === id).length;
+const items = categories.filter((c) => count(c.id) > 0);
+---
+<nav class="cats wrap small medium" aria-label="Categorías del blog">
+  <a class="link cats__item" href="/blog" aria-current={current ? undefined : 'page'}>Todo<span class="muted nums">{posts.length}</span></a>
+  {items.map((c) => (
+    <a class="link cats__item" href={categoryHref(c.id)} aria-current={current === c.id ? 'page' : undefined}>{c.label}<span class="muted nums">{count(c.id)}</span></a>
+  ))}
+</nav>
+<style>
+  .cats { display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; margin-top: 3.5rem; }
+  .cats__item[aria-current="page"] { text-decoration-color: currentColor; }
+  .cats__item span { margin-left: 0.35em; }
+  @media (max-width: 47.99em) {
+    .cats { flex-wrap: nowrap; overflow-x: auto; padding-inline: 16px; margin-top: 2.5rem; gap: 1.5rem; scrollbar-width: none; }
+    .cats::-webkit-scrollbar { display: none; }
+    .cats__item { white-space: nowrap; padding-block: 0.4rem; }
+  }
+</style>

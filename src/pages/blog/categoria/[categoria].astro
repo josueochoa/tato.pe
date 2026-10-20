@@ -1,0 +1,30 @@
+---
+/** One page per category that has notes: /blog/categoria/noticias, /blog/categoria/prompts… */
+import Base from '../../../layouts/Base.astro';
+import PageHead from '../../../components/PageHead.astro';
+import Footer from '../../../components/Footer.astro';
+import CategoryNav from '../../../components/blog/CategoryNav.astro';
+import PostList from '../../../components/blog/PostList.astro';
+import { categories, getCategory } from '../../../lib/blog';
+import { getPosts } from '../../../lib/posts';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return categories
+    .filter((c) => posts.some((p) => p.data.category === c.id))
+    .map((c) => ({ params: { categoria: c.id } }));
+}
+
+const { categoria } = Astro.params;
+const category = getCategory(categoria)!;
+const posts = await getPosts();
+const inCategory = posts.filter((p) => p.data.category === category.id);
+---
+<Base title={`${category.label} · Blog · Tato Studio`} description={category.intro}>
+  <main>
+    <PageHead title={category.label} intro={category.intro} />
+    <CategoryNav posts={posts} current={category.id} />
+    <PostList posts={inCategory} />
+  </main>
+  <Footer />
+</Base>

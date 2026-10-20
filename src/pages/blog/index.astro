@@ -1,39 +1,17 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import PageHead from '../../components/PageHead.astro';
 import Footer from '../../components/Footer.astro';
-const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
-const fmt = (d: Date) => d.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+import CategoryNav from '../../components/blog/CategoryNav.astro';
+import PostList from '../../components/blog/PostList.astro';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
 ---
-<Base title="Blog · Tato Studio" description="Prompts, herramientas y cómo hago cada video. Notas cortas, en español.">
+<Base title="Blog · Tato Studio" description="Noticias, prompts, herramientas y cómo hago cada video. Notas cortas, en español.">
   <main>
-    <PageHead title="Blog" intro="Los prompts de los videos, lo que cambia en cada herramienta y cómo hago los personajes. Notas cortas." />
-    <section class="posts wrap">
-      {posts.map((p, i) => (
-        <a class="post" href={`/blog/${p.id}`} data-reveal style={`--i:${i % 3}`}>
-          {p.data.cover && <img src={p.data.cover} alt={p.data.coverAlt ?? ''} loading="lazy" decoding="async" width="720" height="1280" />}
-          <span class="post__body">
-            <time class="small muted" datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
-            <span class="post__title">{p.data.title}</span>
-            <span class="post__desc">{p.data.description}</span>
-          </span>
-        </a>
-      ))}
-    </section>
+    <PageHead title="Blog" intro="Noticias, los prompts de los videos, lo que cambia en cada herramienta y cómo hago los personajes. Notas cortas." />
+    <CategoryNav posts={posts} />
+    <PostList posts={posts} />
   </main>
   <Footer />
 </Base>
-<style>
-  .posts { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); row-gap: 5rem; padding-block: 5rem calc(var(--section) / 2); }
-  .post { grid-column: span 6; display: grid; grid-template-columns: 2fr 3fr; gap: var(--gutter); text-decoration: none; align-items: start; }
-  .post:nth-child(3n) { grid-column: 4 / span 6; }
-  .post img { aspect-ratio: 4 / 5; object-fit: cover; width: 100%; height: auto; transition: transform 600ms var(--ease-soft); }
-  @media (hover: hover) and (pointer: fine) { .post:hover img { transform: scale(1.03); } .post:hover .post__title { text-decoration: underline; text-underline-offset: 0.12em; } }
-  .post__body { display: flex; flex-direction: column; gap: 0.6rem; }
-  .post__title { font-family: var(--font-display); font-weight: 800; text-transform: uppercase; letter-spacing: -0.03em; font-size: clamp(1.25rem, 1.8vw, 1.75rem); line-height: 1; }
-  @media (max-width: 47.99em) {
-    .posts { display: flex; flex-direction: column; gap: 3rem; padding: 3rem 16px; }
-    .post { grid-template-columns: 1fr 2fr; }
-  }
-</style>

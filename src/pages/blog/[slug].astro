@@ -1,23 +1,28 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Footer from '../../components/Footer.astro';
+import { getCategory, categoryHref, fmtDate } from '../../lib/blog';
+import { getPosts } from '../../lib/posts';
 export async function getStaticPaths() {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const posts = await getPosts();
   return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 const { post } = Astro.props;
 const { Content } = await render(post);
-const fmt = (d: Date) => d.toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+const category = getCategory(post.data.category);
 ---
-<Base title={`${post.data.title} · Tato Studio`} description={post.data.description} image={post.data.cover}>
+<Base title={`${post.data.title} · Tato Studio`} description={post.data.description} image={post.data.cover} type="article" published={post.data.date}>
   <main class="article wrap">
     <header class="article__head">
       <a class="small medium article__mark" href="/">Tato Studio</a>
       <nav class="small medium article__nav" aria-label="Principal"><a class="link" href="/blog">Blog</a><a class="link" href="/#aprende">Aprende</a></nav>
       <h1 class="article__title">{post.data.title}</h1>
       <p class="lead article__desc">{post.data.description}</p>
-      <time class="small muted" datetime={post.data.date.toISOString()}>{fmt(post.data.date)}</time>
+      <p class="small article__meta">
+        {category && <><a class="link-plain medium" href={categoryHref(category.id)}>{category.label}</a> <span class="muted">·</span> </>}
+        <time class="muted" datetime={post.data.date.toISOString()}>{fmtDate(post.data.date)}</time>
+      </p>
     </header>
     {post.data.cover && (
       <figure class="article__cover shutter" data-reveal>
@@ -25,7 +30,10 @@ const fmt = (d: Date) => d.toLocaleDateString('es-PE', { day: 'numeric', month: 
       </figure>
     )}
     <div class="prose article__body"><Content /></div>
-    <p class="article__back"><a class="link-plain medium" href="/blog">Todas las notas</a></p>
+    <p class="article__back">
+      <a class="link-plain medium" href="/blog">Todas las notas</a>
+      {category && <><span class="muted">·</span><a class="link-plain medium" href={categoryHref(category.id)}>Más {category.label.toLowerCase()}</a></>}
+    </p>
   </main>
   <Footer />
 </Base>
@@ -36,17 +44,17 @@ const fmt = (d: Date) => d.toLocaleDateString('es-PE', { day: 'numeric', month: 
   .article__nav { grid-column: 5 / span 4; display: flex; gap: 1.5rem; }
   .article__title { grid-column: 1 / span 9; margin-top: 14vh; font-size: clamp(2rem, 4.6vw, 4.5rem); line-height: 0.95; }
   .article__desc { grid-column: 1 / span 6; margin-top: 1.25rem; }
-  .article__head time { grid-column: 1 / span 6; margin-top: 1rem; }
+  .article__meta { grid-column: 1 / span 6; margin-top: 1rem; }
   .article__cover { grid-column: 1 / span 12; margin: 4rem 0 0; aspect-ratio: 21 / 9; overflow: hidden; }
   .article__cover img { width: 100%; height: 100%; object-fit: cover; }
   .article__body { grid-column: 4 / span 6; margin-top: 4rem; }
-  .article__back { grid-column: 4 / span 6; margin-top: 4rem; }
+  .article__back { grid-column: 4 / span 6; margin-top: 4rem; display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem; }
   @media (max-width: 47.99em) {
     .article { display: block; padding-inline: 16px; }
     .article__head { display: block; }
     .article__nav { display: none; }
     .article__title { margin-top: 10vh; font-size: 10vw; }
-    .article__desc, .article__head time { display: block; margin-top: 1rem; }
+    .article__desc, .article__meta { display: block; margin-top: 1rem; }
     .article__cover { margin-top: 2.5rem; aspect-ratio: 4 / 5; }
     .article__body, .article__back { margin-top: 2.5rem; }
   }
